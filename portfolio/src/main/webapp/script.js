@@ -13,16 +13,16 @@
 // limitations under the License.
 
 /**
- * Adds a random greeting to the page.
+ * Adds a random band to the page.
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
+function addRandomBand() {
+  const bands =
+      ['Mystic Sons', 'Taraf de Haidouks', 'Subcarpati', 'Redman'];
 
   // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+  const band = bands[Math.floor(Math.random() * bands.length)];
 
   // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  const bandContainer = document.getElementById('band-container');
+  bandContainer.innerText = band;
 }
