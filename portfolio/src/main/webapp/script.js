@@ -15,14 +15,3 @@
 /**
  * Adds a random band to the page.
  */
-function addRandomBand() {
-  const bands =
-      ['Mystic Sons', 'Taraf de Haidouks', 'Subcarpati', 'Redman'];
-
-  // Pick a random greeting.
-  const band = bands[Math.floor(Math.random() * bands.length)];
-
-  // Add it to the page.
-  const bandContainer = document.getElementById('band-container');
-  bandContainer.innerText = band;
-}
