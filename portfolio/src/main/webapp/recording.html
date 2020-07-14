@@ -9,17 +9,25 @@
   <body>
     <div id = "intro">
       <h1>Recording music</h1>
-      <p> One of my dreams is to learn to play as many instruments as possible,
-          and become an awesome one man band.
-          For now, I can play:
-      <button onclick="toggleKaval">Kaval with Guitar</button>
-      <div>
-        <img src="/images/kaval.jpg" width="316" height="460">
-        <audio controls>
-          <source src="audio/kaval.mp3" type="audio/mpeg">
-          Your browser does not support the audio element.
-        </audio>
-      </div>
+      <p>One of my dreams is to learn to play as many instruments as possible,
+         and become an awesome one man band.</p>
+      <p>For now, I can play:</p>
     </div>
-
-      
+    <button id="kaval" onclick="toggleShow(this.id)">Kaval with Guitar</button>
+    <div id="kavalContent">
+      <img src="/images/kaval.jpg" width="316" height="460">
+      <audio controls>
+        <source src="audio/kaval.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+    <button id="shakuhachi" onclick="toggleShow(this.id)">Shakuhachi with Guitar</button>
+    <div id="shakuhachiContent">
+      <img src="/images/shakuhachi.jpg">
+      <audio controls>
+        <source src="audio/shakuhachi.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
+    </div>
+  </body>
+</html>
