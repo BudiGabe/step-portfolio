@@ -1,7 +1,3 @@
-#kavalContent {
-    display: none
-}
-
-#shakuhachiContent {
-    display: none
+.hidden {
+    display: none;
 }
