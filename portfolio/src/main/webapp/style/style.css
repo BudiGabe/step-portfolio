@@ -1,5 +1,43 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
+#whole {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  width: 700px;
+}
+
+a:link, a:visited {
+  background-color: #34623F;
+  color: white;
+  padding: 5px 25px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+}
+
+a:hover, a:active {
+  background-color: #1E2F23;
+}
+
+h1 {
+    font-size: 70px;
+}
+
+p {
+  font-size: 20px;
+}
+
+ul {
+    display: flex;
+    align-content: flex-end;
+    margin-right: 50px;
+}
+
+#picDesc {
+    display:flex;
+    justify-content: center;
 }
