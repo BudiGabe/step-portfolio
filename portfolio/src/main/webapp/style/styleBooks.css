@@ -6,3 +6,16 @@
     flex: 20%;
     padding: 5px;
 }
+
+h1 {
+  width: 100%;
+  background-color: #34623F;
+  color: white;
+  font-size: 70px;
+}
+
+img {
+    width: 100%;
+    height: 80%;
+    
+}

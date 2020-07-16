@@ -1,3 +1,37 @@
 .hidden {
-    display: none;
+  display: none;
+}
+
+#hiddenContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+}
+
+h1 {
+  width: 100%;
+  background-color: #34623F;
+  color: white;
+  font-size: 70px;
+}
+
+button {
+  background-color: #34623F;
+  color: white;
+  display: inline-block;
+  padding: 5px 25px;
+}
+
+button:hover, button:active {
+  background-color: #1E2F23;
+}
+
+p {
+  font-size: 20px
+}
+
+img {
+  width: 316px;
+  height: 460px
 }

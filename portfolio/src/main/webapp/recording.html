@@ -15,19 +15,21 @@
     </div>
     <button id="kaval" onclick="toggleShow(this.id)">Kaval with Guitar</button>
     <button id="shakuhachi" onclick="toggleShow(this.id)">Shakuhachi with Guitar</button>
-    <div id="kavalContent" class="hidden">
-      <img src="/images/kaval.jpg" width="316" height="460">
-      <audio controls>
-        <source src="audio/kaval.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-      </audio>
-    </div>
-    <div id="shakuhachiContent" class="hidden">
-      <img src="/images/shakuhachi.jpg">
-      <audio controls>
-        <source src="audio/shakuhachi.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-      </audio>
+    <div id="hiddenContent">
+      <div id="kavalContent" class="hidden">
+        <img id="kavalPic" src="/images/kaval.jpg" >
+        <audio controls id="kavalAudio">
+          <source src="audio/kaval.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+      <div id="shakuhachiContent" class="hidden">
+        <img id="shakuhachiPic" src="/images/shakuhachi.jpg">
+        <audio controls id="shakuhachiAudio">
+          <source src="audio/shakuhachi.mp3" type="audio/mpeg">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
     </div>
   </body>
 </html>
