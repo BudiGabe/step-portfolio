@@ -40,12 +40,12 @@ ul {
   margin-right: 50px;
 }
 
-#picDesc {
+#pic-desc {
   display:flex;
   justify-content: center;
 }
 
-#bandContainer {
+#band-container {
     display: flex;
     font-size: 30px;
     justify-content: center;

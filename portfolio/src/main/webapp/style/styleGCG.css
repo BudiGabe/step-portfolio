@@ -3,15 +3,3 @@
   flex-direction: row;
   justify-content: space-between;
 }
-
-h1 {
-  width: 100%;
-  background-color: #34623F;
-  color: white;
-  font-size: 70px;
-}
-
-p {
-  width: 650px;
-  font-size: 20px;
-}

@@ -5,11 +5,11 @@ function getMood() {
 }
 
 function generateBand() {
-    const NUMBER_OF_BANDS = 5;
+    const numberOfBands = 5;
     let mood = getMood();
     let bands = getBands();
     let bandContainer = document.getElementById("bandContainer");
-    let rand = Math.floor(Math.random() * NUMBER_OF_BANDS);
+    let rand = Math.floor(Math.random() * numberOfBands);
     bandContainer.innerHTML = bands[mood][rand];
 }
 
