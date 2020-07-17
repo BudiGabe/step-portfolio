@@ -1,3 +1,25 @@
 .hidden {
-    display: none;
+  display: none;
+}
+
+#hidden-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+button {
+  background-color: #34623F;
+  color: white;
+  display: inline-block;
+  padding: 5px 25px;
+}
+
+button:hover, button:active {
+  background-color: #1E2F23;
+}
+
+img {
+  width: 316px;
+  height: 460px
 }
