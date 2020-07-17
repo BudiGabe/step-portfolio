@@ -2,11 +2,10 @@
   display: none;
 }
 
-#hiddenContent {
+#hidden-content {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
-
 }
 
 button {
