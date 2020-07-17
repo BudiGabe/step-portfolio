@@ -16,17 +16,17 @@ function generateBand() {
 function getBands() {
     let bands = {};
     bands["Chill"] = ["Elijah Nang", "Joji", "Syros", "DopeSmoker",
-    "Mystic Sons"];
+        "Mystic Sons"];
     bands["Funky"] = ["Marc Rebillet", "TWRP", "Ninja Sex Party", 
-    "Flamingosis", "Too Many Zooz"];
+        "Flamingosis", "Too Many Zooz"];
     bands["Ecstatic"] = ["Big Bad Voodoo Daddy", "Taraf de Haidouks",
-    "Parov Stelar", "The Dreadnoughts", "DJ Blyatman"];
+        "Parov Stelar", "The Dreadnoughts", "DJ Blyatman"];
     bands["Fancy"] = ["Devil Doll", "The Speakeasies Swing Band", 
-    "Postmodern Jukebox", "Destiny Quartet", "BGKO"];
+        "Postmodern Jukebox", "Destiny Quartet", "BGKO"];
     bands["Shoot a cowboy"] = ["Blues Saraceno", "Nick Nolan", "William Elliot Whitmore",
-    "Justin Johnson", "Kenneth Sorenson"];
+        "Justin Johnson", "Kenneth Sorenson"];
     bands["Go to war"] = ["Skald", "Wardruna", "Danheim", "Percival", "The HU"];
     bands["Sacrifice blood for the Blood God"] = 
-    ["Sunn O)))", "Heilung", "Igorrr", "Black Mountain Transmitter", "Electric Wizard"];
+        ["Sunn O)))", "Heilung", "Igorrr", "Black Mountain Transmitter", "Electric Wizard"];
     return bands;
 }
