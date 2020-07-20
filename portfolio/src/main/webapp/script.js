@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-function getList() {
-    fetch("/data").then(response => response.json()).then((list) => {
-        console.log(list);
-        document.getElementById("list-container").innerHTML = list;
+//Fetch list of comments from server and print them on page
+function getComments() {
+    fetch("/data").then(response => response.json()).then((comments) => {
+        document.getElementById("comments-container").innerHTML = comments;
     })
 }
