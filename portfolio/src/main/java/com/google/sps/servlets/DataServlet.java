@@ -22,31 +22,32 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private ArrayList<String> list;
-  
+//Premade list of comments to pass from server
+  private ArrayList<String> comments;
+  private Gson gson = new Gson();
+
+//init() is called once when servlet is created
   @Override
-  public void init(){
-      list = new ArrayList<>();
-      list.add("Pineapple on pizza is pretty good");
-      list.add("Dogs are overrated");
-      list.add("Alpacas are awesome");
+  public void init() {
+      comments = new ArrayList<>();
+      comments.add("Pineapple on pizza is great");
+      comments.add("Dogs are overrated");
+      comments.add("Alpacas are awesome");
   }
 
+//Get the list of comments from server as a Json
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    init();
-    String json = convertToJson(list);
+    String json = convertToJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
   }
 
-  private String convertToJson(ArrayList list) {
-      Gson gson = new Gson();
-      String json = gson.toJson(list);
+  private String convertToJson(ArrayList<String> comments) {
+      String json = gson.toJson(comments);
       return json;
   }
 }
