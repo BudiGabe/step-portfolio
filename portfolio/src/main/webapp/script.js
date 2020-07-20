@@ -12,20 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-function getHelloMessage() {
-    console.log("Getting hello message");
-    const responsePromise = fetch("/data");
-    responsePromise.then(handleResponse);
-}
-
-function handleResponse(response) {
-    console.log("Handling response");
-    const textPromise = response.text();
-    textPromise.then(addHelloMessage);
-}
-
-function addHelloMessage(hello) {
-    console.log("Printing message");
-    const helloContainer = document.getElementById("hello-container");
-    helloContainer.innerHTML = hello;
+function getList() {
+    fetch("/data").then(response => response.json()).then((list) => {
+        console.log(list);
+        document.getElementById("list-container").innerHTML = list;
+    })
 }
