@@ -28,7 +28,7 @@ public class DataServlet extends HttpServlet {
 /**
  *Premade list of comments to pass from server
  */
-  private ArrayList<String> comments;
+  final private ArrayList<String> comments = new ArrayList<>();;
   final private Gson gson = new Gson();
 
 /**
@@ -36,7 +36,6 @@ public class DataServlet extends HttpServlet {
  */
   @Override
   public void init() {
-      comments = new ArrayList<>();
       comments.add("Pineapple on pizza is great");
       comments.add("Dogs are overrated");
       comments.add("Alpacas are awesome");
