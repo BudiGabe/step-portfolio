@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- *Fetch list of comments from server and print them on page
+ * Fetch list of comments from server and print them on page
  */
 function getComments() {
     fetch("/data").then(response => response.json()).then((comments) => {
