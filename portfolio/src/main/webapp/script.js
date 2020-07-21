@@ -20,8 +20,7 @@ function getComments() {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
         for(const comment of comments) {
-            commentsContainer.appendChild(
-            createListElement(comment));
+            commentsContainer.appendChild(createListElement(comment));
         }
     })
 }
