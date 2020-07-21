@@ -25,11 +25,15 @@ import java.util.ArrayList;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-//Premade list of comments to pass from server
+/**
+ *Premade list of comments to pass from server
+ */
   final private ArrayList<String> comments;
   final private Gson gson = new Gson();
 
-//init() is called once when servlet is created
+/**
+ *init() is called once when servlet is created
+ */
   @Override
   public void init() {
       comments = new ArrayList<>();
@@ -38,7 +42,9 @@ public class DataServlet extends HttpServlet {
       comments.add("Alpacas are awesome");
   }
 
-//Get the list of comments from server as a Json
+/**
+ *Get the list of comments from server as a Json
+ */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String json = gson.toJson(comments);

@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//Fetch list of comments from server and print them on page
+/**
+ *Fetch list of comments from server and print them on page
+ */
 function getComments() {
     fetch("/data").then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
