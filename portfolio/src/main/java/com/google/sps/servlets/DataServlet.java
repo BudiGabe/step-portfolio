@@ -28,7 +28,7 @@ public class DataServlet extends HttpServlet {
 /**
  *Premade list of comments to pass from server
  */
-  final private ArrayList<String> comments = new ArrayList<>();;
+  final private ArrayList<String> comments = new ArrayList<>();
   final private Gson gson = new Gson();
 
 /**
