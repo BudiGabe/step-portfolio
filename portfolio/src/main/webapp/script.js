@@ -15,6 +15,17 @@
 //Fetch list of comments from server and print them on page
 function getComments() {
     fetch("/data").then(response => response.json()).then((comments) => {
-        document.getElementById("comments-container").innerHTML = comments;
+        const commentsContainer = document.getElementById("comments-container");
+        commentsContainer.innerHTML = '';
+        for(const comment of comments) {
+            commentsContainer.appendChild(
+            createListElement(comment));
+        }
     })
+}
+
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
