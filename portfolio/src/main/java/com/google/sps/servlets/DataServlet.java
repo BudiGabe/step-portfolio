@@ -26,8 +26,8 @@ import java.util.ArrayList;
 public class DataServlet extends HttpServlet {
 
 //Premade list of comments to pass from server
-  private ArrayList<String> comments;
-  private Gson gson = new Gson();
+  final private ArrayList<String> comments;
+  final private Gson gson = new Gson();
 
 //init() is called once when servlet is created
   @Override
@@ -41,13 +41,8 @@ public class DataServlet extends HttpServlet {
 //Get the list of comments from server as a Json
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String json = convertToJson(comments);
+    String json = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
-  }
-
-  private String convertToJson(ArrayList<String> comments) {
-      String json = gson.toJson(comments);
-      return json;
   }
 }
