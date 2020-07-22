@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  private final ArrayList<String> comments = new ArrayList<>();
   private final Gson gson = new Gson();
   private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
@@ -37,6 +38,16 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query("Comment");
+    PreparedQuery results = datastore.prepare(query);
+
+    //Create a new array, otherwise there are duplicate commentsd
+    ArrayList<String> comments = new ArrayList<>();
+    for(Entity entity : results.asIterable()) {
+      String comment = (String) entity.getProperty("message");
+      comments.add(comment);
+    }
+
     String json = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -48,14 +59,10 @@ public class DataServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getUserComment(request, "comment-input", "");
-    comments.add(comment);
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("message", comment);
     datastore.put(commentEntity);
-
-    response.setContentType("text/html;");
-    response.getWriter().println(comments);
 
     response.sendRedirect("/index.html");
   }
