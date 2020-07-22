@@ -38,6 +38,9 @@ public class DataServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
+  /**
+   * Let the user post his comment to the server
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getUserComment(request, "comment-input", "");
