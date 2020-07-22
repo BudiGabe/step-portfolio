@@ -21,12 +21,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   private final ArrayList<String> comments = new ArrayList<>();
   private final Gson gson = new Gson();
+  private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   /**
    * Get the list of comments from server as a Json
@@ -45,8 +49,14 @@ public class DataServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String comment = getUserComment(request, "comment-input", "");
     comments.add(comment);
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("message", comment);
+    datastore.put(commentEntity);
+
     response.setContentType("text/html;");
     response.getWriter().println(comments);
+
     response.sendRedirect("/index.html");
   }
 
