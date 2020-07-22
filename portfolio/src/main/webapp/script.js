@@ -16,7 +16,7 @@
  * Fetch list of comments from server and print them on page
  */
 function getComments() {
-    fetch("/data").then(response => response.json()).then((comments) => {
+    fetch("/data?maxComms=5").then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
         for(const comment of comments) {

@@ -42,9 +42,15 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    //Create a new array, otherwise there are duplicate commentsd
+    int maxComms = Integer.parseInt(request.getParameter("maxComms"));
+
+    // Create a new array, otherwise there are duplicate comments
     ArrayList<String> comments = new ArrayList<>();
     for(Entity entity : results.asIterable()) {
+      if(comments.size() == maxComms) {
+          break;
+      }
+
       String comment = (String) entity.getProperty("message");
       comments.add(comment);
     }
