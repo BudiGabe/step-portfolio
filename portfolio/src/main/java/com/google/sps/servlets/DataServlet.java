@@ -25,21 +25,8 @@ import java.util.ArrayList;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  /**
-   * Premade list of comments to pass from server
-   */
   private final ArrayList<String> comments = new ArrayList<>();
   private final Gson gson = new Gson();
-
-  /**
-   * init() is called once when servlet is created
-   */
-  @Override
-  public void init() {
-      comments.add("Pineapple on pizza is great");
-      comments.add("Dogs are overrated");
-      comments.add("Alpacas are awesome");
-  }
 
   /**
    * Get the list of comments from server as a Json
@@ -49,5 +36,22 @@ public class DataServlet extends HttpServlet {
     String json = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = getUserComment(request, "comment-input", "");
+    comments.add(comment);
+    response.setContentType("text/html;");
+    response.getWriter().println(comments);
+    response.sendRedirect("/index.html");
+  }
+
+  private String getUserComment(HttpServletRequest request, String commentForm, String defaultValue) {
+    String comment = request.getParameter(commentForm);
+    if(comment == null) {
+      return defaultValue;
+    }
+    return comment;
   }
 }
