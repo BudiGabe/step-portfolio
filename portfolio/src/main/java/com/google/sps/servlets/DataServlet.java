@@ -21,33 +21,71 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.ArrayList;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  /**
-   * Premade list of comments to pass from server
-   */
-  private final ArrayList<String> comments = new ArrayList<>();
   private final Gson gson = new Gson();
-
-  /**
-   * init() is called once when servlet is created
-   */
-  @Override
-  public void init() {
-      comments.add("Pineapple on pizza is great");
-      comments.add("Dogs are overrated");
-      comments.add("Alpacas are awesome");
-  }
-
+  private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+  private static final int DEFAULT_MAX_COMMS = 0;
+  private static final String MESSAGE = "message";
+  private static final String TIMESTAMP = "timestamp";
+  private static final String COMMENT = "Comment";
   /**
    * Get the list of comments from server as a Json
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    Query query = new Query(COMMENT).addSort(TIMESTAMP, SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+
+    int maxComms = getMaxComms(request);
+
+    // Create a new array, otherwise there are duplicate comments
+    ArrayList<String> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      if(comments.size() == maxComms) {
+          break;
+      }
+
+      String comment = (String) entity.getProperty(MESSAGE);
+      comments.add(comment);
+    }
+
     String json = gson.toJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  /**
+   * Let the user post their comment to the server
+   */
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String comment = getUserComment(request, "comment-input", "");
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity(COMMENT);
+    commentEntity.setProperty(MESSAGE, comment);
+    commentEntity.setProperty(TIMESTAMP, timestamp);
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/index.html");
+  }
+
+  private String getUserComment(HttpServletRequest request, String commentForm, String defaultValue) {
+    String comment = request.getParameter(commentForm);
+    return comment == null ? defaultValue : comment;
+  }
+
+  private int getMaxComms(HttpServletRequest request) {
+    int maxComms = Integer.parseInt(request.getParameter("maxComms"));
+    return maxComms < 0 ? DEFAULT_MAX_COMMS : maxComms;
   }
 }
