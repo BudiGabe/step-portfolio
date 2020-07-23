@@ -57,3 +57,7 @@ ul {
 #max-comments {
     width: 10%;
 }
+
+#delete-button {
+    width: 20%;
+}
