@@ -45,7 +45,7 @@ public class DataServlet extends HttpServlet {
     Query query = new Query(COMMENT).addSort(TIMESTAMP, SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    int maxComms = getMaxComms(request, DEFAULT_MAX_COMMS);
+    int maxComms = getMaxComms(request);
 
     // Create a new array, otherwise there are duplicate comments
     ArrayList<String> comments = new ArrayList<>();
@@ -84,8 +84,8 @@ public class DataServlet extends HttpServlet {
     return comment == null ? defaultValue : comment;
   }
 
-  private int getMaxComms(HttpServletRequest request, int defaultValue) {
+  private int getMaxComms(HttpServletRequest request) {
     int maxComms = Integer.parseInt(request.getParameter("maxComms"));
-    return maxComms < 0 ? defaultValue : maxComms;
+    return maxComms < 0 ? DEFAULT_MAX_COMMS : maxComms;
   }
 }
