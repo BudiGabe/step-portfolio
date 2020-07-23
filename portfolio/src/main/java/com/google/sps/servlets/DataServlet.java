@@ -61,7 +61,7 @@ public class DataServlet extends HttpServlet {
   }
 
   /**
-   * Let the user post his comment to the server
+   * Let the user post their comment to the server
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
