@@ -33,7 +33,7 @@ public class DataServlet extends HttpServlet {
 
   private final Gson gson = new Gson();
   private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-
+  private static final int DEFAULT_MAX_COMMS = 0;
   /**
    * Get the list of comments from server as a Json
    */
@@ -42,7 +42,7 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
-    int maxComms = Integer.parseInt(request.getParameter("maxComms"));
+    int maxComms = getMaxComms(request, DEFAULT_MAX_COMMS);
 
     // Create a new array, otherwise there are duplicate comments
     ArrayList<String> comments = new ArrayList<>();
@@ -78,9 +78,11 @@ public class DataServlet extends HttpServlet {
 
   private String getUserComment(HttpServletRequest request, String commentForm, String defaultValue) {
     String comment = request.getParameter(commentForm);
-    if(comment == null) {
-      return defaultValue;
-    }
-    return comment;
+    return comment == null ? defaultValue : comment;
+  }
+
+  private int getMaxComms(HttpServletRequest request, int defaultValue) {
+    int maxComms = Integer.parseInt(request.getParameter("maxComms"));
+    return maxComms < 0 ? defaultValue : maxComms;
   }
 }
