@@ -34,24 +34,27 @@ public class DataServlet extends HttpServlet {
   private final Gson gson = new Gson();
   private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   private static final int DEFAULT_MAX_COMMS = 0;
+  private static final String MESSAGE = "message";
+  private static final String TIMESTAMP = "timestamp";
+  private static final String COMMENT = "Comment";
   /**
    * Get the list of comments from server as a Json
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    Query query = new Query(COMMENT).addSort(TIMESTAMP, SortDirection.DESCENDING);
     PreparedQuery results = datastore.prepare(query);
 
     int maxComms = getMaxComms(request, DEFAULT_MAX_COMMS);
 
     // Create a new array, otherwise there are duplicate comments
     ArrayList<String> comments = new ArrayList<>();
-    for(Entity entity : results.asIterable()) {
+    for (Entity entity : results.asIterable()) {
       if(comments.size() == maxComms) {
           break;
       }
 
-      String comment = (String) entity.getProperty("message");
+      String comment = (String) entity.getProperty(MESSAGE);
       comments.add(comment);
     }
 
@@ -68,9 +71,9 @@ public class DataServlet extends HttpServlet {
     String comment = getUserComment(request, "comment-input", "");
     long timestamp = System.currentTimeMillis();
 
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("message", comment);
-    commentEntity.setProperty("timestamp", timestamp);
+    Entity commentEntity = new Entity(COMMENT);
+    commentEntity.setProperty(MESSAGE, comment);
+    commentEntity.setProperty(TIMESTAMP, timestamp);
     datastore.put(commentEntity);
 
     response.sendRedirect("/index.html");
