@@ -8,15 +8,28 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet("/band-chart")
-public class BandChartServlet extends HttpServlet {
-  private Map<String, Integer> bandVotes = new HashMap<>();
+@WebServlet("/genre-chart")
+public class GenreChartServlet extends HttpServlet {
+  private Map<String, Integer> genreVotes = new HashMap<>();
   private final Gson gson = new Gson();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json");
-    String json = gson.toJson(bandVotes);
+    String json = gson.toJson(genreVotes);
     response.getWriter().println(json);
+  }
+
+   @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String band = request.getParameter("band");
+    int currentVotes = getCurrentVotes(bandVotes);
+    bandVotes.put(band, currentVotes + 1);
+
+    response.sendRedirect("/band-chart.html");
+  }
+
+  public int getCurrentVotes(bandVotes) {
+      return bandVotes.containsKey(band) ? bandVotes.get(band) : 0;
   }
 }
