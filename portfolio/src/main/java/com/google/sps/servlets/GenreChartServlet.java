@@ -30,7 +30,7 @@ public class GenreChartServlet extends HttpServlet {
     response.sendRedirect("/genre-chart.html");
   }
 
-  public int getCurrentVotes(Hashmap<String, Integer> genreVotes, String genre) {
+  public int getCurrentVotes(Map<String, Integer> genreVotes, String genre) {
       return genreVotes.containsKey(genre) ? genreVotes.get(genre) : 0;
   }
 }
