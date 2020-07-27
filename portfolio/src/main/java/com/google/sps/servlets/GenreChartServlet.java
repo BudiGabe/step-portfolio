@@ -27,7 +27,7 @@ public class GenreChartServlet extends HttpServlet {
     int currentVotes = getCurrentVotes(genreVotes, genre);
     genreVotes.put(genre, currentVotes + 1);
 
-    response.sendRedirect("/genre-chart.html");
+    response.sendRedirect("/genreChart.html");
   }
 
   public int getCurrentVotes(Map<String, Integer> genreVotes, String genre) {
