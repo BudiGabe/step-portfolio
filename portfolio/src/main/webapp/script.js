@@ -21,8 +21,9 @@ function getComments() {
     fetch("/data?maxComms=" + maxComms).then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
+        console.log(comments);
         for(const comment of comments) {
-            commentsContainer.appendChild(createListElement(comment));
+            commentsContainer.appendChild(createListElement(comment.message, comment.score));
         }
     })
 }
@@ -31,8 +32,8 @@ function deleteComments() {
   fetch("/delete-data", {method: 'post'}).then(getComments());
 }
 
-function createListElement(text) {
+function createListElement(message, score) {
   const liElement = document.createElement('li');
-  liElement.innerText = text;
+  liElement.innerText = message + ' (' + score + ')';
   return liElement;
 }
