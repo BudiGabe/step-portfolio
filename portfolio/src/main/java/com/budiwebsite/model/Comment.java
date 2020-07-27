@@ -1,8 +1,8 @@
 package com.budiwebsite.model;
 
 /**
- * Class stores comments inputted with their user along with their morality rating
- * This allows for easier conversion from list of objects to JSON
+ * Class stores comments inputted with their user along with their morality rating.
+ * This allows for easier conversion from list of objects to JSON.
  */
 public class Comment {
 
