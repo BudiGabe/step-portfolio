@@ -1,9 +1,13 @@
 package com.budiwebsite.model;
 
+/**
+ * Class stores comments inputted with their user along with their morality rating
+ * This allows for easier conversion from list of objects to JSON
+ */
 public class Comment {
 
-  String message;
-  double score;
+  private String message;
+  private double score;
   
   public Comment (String message, double score) {
       this.message = message;
