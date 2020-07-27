@@ -100,7 +100,9 @@ public class DataServlet extends HttpServlet {
 
   /**
    * Based on the core sentiment of the message sent, 
-   * the AI calculates the "score" of a comment
+   * the AI calculates the "score" of a comment.
+   * Score is a representation of how positive a comment is, 1 being most positive
+   * and -1 most negative.
    */
   private double calculateScore(String message) throws IOException {
     Document doc =
