@@ -21,8 +21,8 @@ function getComments() {
     fetch("/data?maxComms=" + maxComms).then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
-        for(const comment of comments) {
-            commentsContainer.appendChild(createListElement(comment));
+        for (const comment of comments) {
+            commentsContainer.appendChild(createListElement(comment.message, comment.score));
         }
     })
 }
@@ -31,8 +31,18 @@ function deleteComments() {
   fetch("/delete-data", {method: 'post'}).then(getComments());
 }
 
-function createListElement(text) {
+function createListElement(message, score) {
   const liElement = document.createElement('li');
-  liElement.innerText = text;
+  liElement.innerText = message + ' (' + decideMorality(score) + ')';
   return liElement;
+}
+
+/**
+ * Variable score is calculated by an AI and it reflects how positive your comment was.
+ * Score can range from -1 to 1.
+ * A negative score means your comment was hateful or negative.
+ * Positive criticism may be wrongly categorized as evil, depending on how it's worded.
+ */
+function decideMorality(score) {
+  return score > 0 ? "good" : "evil";
 }

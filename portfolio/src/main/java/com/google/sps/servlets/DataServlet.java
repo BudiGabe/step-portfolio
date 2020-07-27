@@ -27,6 +27,10 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+import com.budiwebsite.model.Comment;
 
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
@@ -37,6 +41,7 @@ public class DataServlet extends HttpServlet {
   private static final String MESSAGE = "message";
   private static final String TIMESTAMP = "timestamp";
   private static final String COMMENT = "Comment";
+  private static final String SCORE = "score";
   /**
    * Get the list of comments from server as a Json
    */
@@ -48,13 +53,16 @@ public class DataServlet extends HttpServlet {
     int maxComms = getMaxComms(request);
 
     // Create a new array, otherwise there are duplicate comments
-    ArrayList<String> comments = new ArrayList<>();
+    ArrayList<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
       if(comments.size() == maxComms) {
           break;
       }
 
-      String comment = (String) entity.getProperty(MESSAGE);
+      String message = (String) entity.getProperty(MESSAGE);
+      double score = (double) entity.getProperty(SCORE);
+      Comment comment = new Comment(message, score);
+
       comments.add(comment);
     }
 
@@ -68,12 +76,13 @@ public class DataServlet extends HttpServlet {
    */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    String comment = getUserComment(request, "comment-input", "");
+    String message = getUserComment(request, "comment-input", "");
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity(COMMENT);
-    commentEntity.setProperty(MESSAGE, comment);
+    commentEntity.setProperty(MESSAGE, message);
     commentEntity.setProperty(TIMESTAMP, timestamp);
+    commentEntity.setProperty(SCORE, calculateScore(message));
     datastore.put(commentEntity);
 
     response.sendRedirect("/index.html");
@@ -87,5 +96,20 @@ public class DataServlet extends HttpServlet {
   private int getMaxComms(HttpServletRequest request) {
     int maxComms = Integer.parseInt(request.getParameter("maxComms"));
     return maxComms < 0 ? DEFAULT_MAX_COMMS : maxComms;
+  }
+
+  /**
+   * Based on the core sentiment of the message sent, 
+   * the AI calculates the "score" of a comment.
+   * Score is a representation of how positive a comment is, 1 being most positive
+   * and -1 most negative.
+   */
+  private double calculateScore(String message) throws IOException {
+    Document doc =
+        Document.newBuilder().setContent(message).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+    languageService.close();
+    return sentiment.getScore();
   }
 }
