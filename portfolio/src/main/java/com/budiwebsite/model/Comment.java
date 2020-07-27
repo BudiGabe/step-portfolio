@@ -6,8 +6,8 @@ package com.budiwebsite.model;
  */
 public class Comment {
 
-  private String message;
-  private double score;
+  private final String message;
+  private final double score;
   
   public Comment (String message, double score) {
       this.message = message;
