@@ -21,7 +21,7 @@ function getComments() {
     fetch("/data?maxComms=" + maxComms).then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
-        for(const comment of comments) {
+        for (const comment of comments) {
             commentsContainer.appendChild(createListElement(comment.message, comment.score));
         }
     })
