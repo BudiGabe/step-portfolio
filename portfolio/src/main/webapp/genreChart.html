@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Genre chart</title>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="genreChartScript.js"></script>
+  </head>
+  <body>
+    <h1>Most popular genres</h1>
+    <div id="chart-container"></div>
+    <h2>Vote</h2>
+    <form action="/genre-chart" method="POST">
+      <textarea name="genre"></textarea>
+      <button>Submit</button>
+    </form>
+  </body>
