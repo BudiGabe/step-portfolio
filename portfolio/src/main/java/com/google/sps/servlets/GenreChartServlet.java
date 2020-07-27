@@ -24,13 +24,13 @@ public class GenreChartServlet extends HttpServlet {
    @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String genre = request.getParameter("genre");
-    int currentVotes = getCurrentVotes(genreVotes);
+    int currentVotes = getCurrentVotes(genreVotes, genre);
     genreVotes.put(genre, currentVotes + 1);
 
     response.sendRedirect("/genre-chart.html");
   }
 
-  public int getCurrentVotes(Hashmap genreVotes) {
+  public int getCurrentVotes(Hashmap<String, Integer> genreVotes, String genre) {
       return genreVotes.containsKey(genre) ? genreVotes.get(genre) : 0;
   }
 }
