@@ -37,6 +37,12 @@ function createListElement(message, score) {
   return liElement;
 }
 
+/**
+ * Variable score is calculated by an AI and it reflects how positive your comment was.
+ * Score can range from -1 to 1.
+ * A negative score means your comment was hateful or negative
+ * Positive criticism may be wrongly categorized as evil, depending on how it's worded
+ */
 function decideMorality(score) {
   return score > 0 ? "good" : "evil";
 }
