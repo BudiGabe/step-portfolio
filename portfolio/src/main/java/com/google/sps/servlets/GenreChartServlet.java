@@ -3,6 +3,7 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,12 +25,12 @@ public class GenreChartServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String genre = request.getParameter("genre");
     int currentVotes = getCurrentVotes(genreVotes);
-    genreVotes.put(band, currentVotes + 1);
+    genreVotes.put(genre, currentVotes + 1);
 
     response.sendRedirect("/genre-chart.html");
   }
 
-  public int getCurrentVotes(genreVotes) {
+  public int getCurrentVotes(Hashmap genreVotes) {
       return genreVotes.containsKey(genre) ? genreVotes.get(genre) : 0;
   }
 }
