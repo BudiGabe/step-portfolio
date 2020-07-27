@@ -21,7 +21,6 @@ function getComments() {
     fetch("/data?maxComms=" + maxComms).then(response => response.json()).then((comments) => {
         const commentsContainer = document.getElementById("comments-container");
         commentsContainer.innerHTML = '';
-        console.log(comments);
         for(const comment of comments) {
             commentsContainer.appendChild(createListElement(comment.message, comment.score));
         }
@@ -34,6 +33,10 @@ function deleteComments() {
 
 function createListElement(message, score) {
   const liElement = document.createElement('li');
-  liElement.innerText = message + ' (' + score + ')';
+  liElement.innerText = message + ' (' + decideMorality(score) + ')';
   return liElement;
+}
+
+function decideMorality(score) {
+  return score > 0 ? "good" : "evil";
 }
