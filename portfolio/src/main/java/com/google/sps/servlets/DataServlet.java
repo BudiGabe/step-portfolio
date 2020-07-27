@@ -102,7 +102,7 @@ public class DataServlet extends HttpServlet {
    * Based on the core sentiment of the message sent, 
    * the AI calculates the "score" of a comment
    */
-  private double calculateScore(String message) {
+  private double calculateScore(String message) throws IOException {
     Document doc =
         Document.newBuilder().setContent(message).setType(Document.Type.PLAIN_TEXT).build();
     LanguageServiceClient languageService = LanguageServiceClient.create();
