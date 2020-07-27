@@ -85,14 +85,12 @@ public class DataServlet extends HttpServlet {
     Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
     double score = sentiment.getScore();
     languageService.close();
-    System.out.println("Got sentiment and score");
 
     Entity commentEntity = new Entity(COMMENT);
     commentEntity.setProperty(MESSAGE, message);
     commentEntity.setProperty(TIMESTAMP, timestamp);
     commentEntity.setProperty(SCORE, score);
     datastore.put(commentEntity);
-    System.out.println("Added entity to datastore");
 
     response.sendRedirect("/index.html");
   }
