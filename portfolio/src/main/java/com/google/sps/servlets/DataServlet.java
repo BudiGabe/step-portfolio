@@ -74,9 +74,17 @@ public class DataServlet extends HttpServlet {
     String comment = getUserComment(request, "comment-input", "");
     long timestamp = System.currentTimeMillis();
 
+    Document doc =
+        Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+    float score = sentiment.getScore();
+    languageService.close();
+
     Entity commentEntity = new Entity(COMMENT);
     commentEntity.setProperty(MESSAGE, comment);
     commentEntity.setProperty(TIMESTAMP, timestamp);
+    commentEntity.setProperty("score", score);
     datastore.put(commentEntity);
 
     response.sendRedirect("/index.html");
