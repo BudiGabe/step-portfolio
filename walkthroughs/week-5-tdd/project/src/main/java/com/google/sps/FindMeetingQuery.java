@@ -29,12 +29,22 @@ public final class FindMeetingQuery {
       return Arrays.asList();
     }
     
-    List<TimeRange> availableTime = new ArrayList<TimeRange>();
-    for (Event event : events) {
-        availableTime.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event.getWhen().start(), false));
-        availableTime.add(TimeRange.fromStartEnd(event.getWhen().end(), TimeRange.END_OF_DAY, true));
+    List<TimeRange> availableTimes = new ArrayList<TimeRange>();
+
+    //Store in ArrayList for easier access to elements
+    List<Event> eventList = new ArrayList<>(events);
+
+    //Add the first time slot, from the start of the day to the start of the first event.
+    availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, eventList.get(0).getWhen().start(), false));
+
+    //Connect the end of each event with the start of the next event
+    for (int i = 0; i < eventList.size() - 1; i++) {
+      availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(), eventList.get(i + 1).getWhen().start(), false));
     }
 
-    return availableTime;
+    //Add the last time slot, from the end of the last event, to the end of the day.
+    availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(), TimeRange.END_OF_DAY, true));
+
+    return availableTimes;
   }
 }
