@@ -24,13 +24,8 @@ public class GenreChartServlet extends HttpServlet {
    @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String genre = request.getParameter("genre");
-    int currentVotes = getCurrentVotes(genreVotes, genre);
-    genreVotes.put(genre, currentVotes + 1);
+    genreVotes.put(genre, genreVotes.getOrDefault(genre, 0) + 1);
 
     response.sendRedirect("/genreChart.html");
-  }
-
-  public int getCurrentVotes(Map<String, Integer> genreVotes, String genre) {
-      return genreVotes.containsKey(genre) ? genreVotes.get(genre) : 0;
   }
 }
