@@ -21,7 +21,7 @@ public class GenreChartServlet extends HttpServlet {
     response.getWriter().println(json);
   }
 
-   @Override
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     String genre = request.getParameter("genre");
     genreVotes.put(genre, genreVotes.getOrDefault(genre, 0) + 1);
