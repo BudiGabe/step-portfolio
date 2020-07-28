@@ -16,6 +16,8 @@ package com.google.sps;
 
 import java.util.Collection;
 import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
@@ -23,10 +25,16 @@ public final class FindMeetingQuery {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
 
-     if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+    if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
       return Arrays.asList();
     }
+    
+    List<TimeRange> availableTime = new ArrayList<TimeRange>();
+    for (Event event : events) {
+        availableTime.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, event.getWhen().start(), false));
+        availableTime.add(TimeRange.fromStartEnd(event.getWhen().end(), TimeRange.END_OF_DAY, true));
+    }
 
-    throw new UnsupportedOperationException("TODO: Implement this method.");
+    return availableTime;
   }
 }
