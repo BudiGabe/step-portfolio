@@ -40,6 +40,10 @@ public final class FindMeetingQuery {
 
     //Connect the end of each event with the start of the next event
     for (int i = 0; i < eventList.size() - 1; i++) {
+      //If the current event and next one overlap, just skip that time slot
+      if(eventList.get(i).getWhen().overlaps(eventList.get(i + 1).getWhen())) {
+        continue;
+      }
       availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
         eventList.get(i + 1).getWhen().start(), false));
     }
