@@ -34,9 +34,12 @@ public final class FindMeetingQuery {
     // Store in ArrayList for easier access to elements.
     List<Event> eventList = new ArrayList<>(events);
 
-    // Add the first time slot, from the start of the day to the start of the first event.
-    availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
-      eventList.get(0).getWhen().start(), false));
+    // Add the first time slot, from the start of the day to the start of the first event,
+    // only if there's no event that starts the day.
+    if(eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY) {
+      availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
+        eventList.get(0).getWhen().start(), false));
+    }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
       // Check if our event fully contains the next one.
@@ -56,16 +59,31 @@ public final class FindMeetingQuery {
             continue;
           }
 
-          // Connect the end of current event with the start of the next event.
-          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
-            eventList.get(i + 1).getWhen().start(), false));   
+          // Connect the end of current event with the start of the next event
+          // only if the request fits.
+          if(eventList.get(i + 1).getWhen().start() - eventList.get(i).getWhen().end() >=
+            request.getDuration()) {
+            availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+              eventList.get(i + 1).getWhen().start(), false));  
+          } 
         }
     }
 
-    //Add the last time slot, from the end of the last event, to the end of the day.
-    if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1) {
-      availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
-        TimeRange.END_OF_DAY, true));
+    // Add the last time slot, from the end of the last event to the end of the day,
+    // only if the end of day was not already added or there is no event that ends the day
+    if(availableTimes.size() != 0) {
+      if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1 &&
+          eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY) {
+          availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
+            TimeRange.END_OF_DAY, true));
+      } else {
+          //If it didn't fit anywhere, check if it fits at the end of the day
+          if(request.getDuration() < TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1).getWhen().end() &&
+            availableTimes.size() == 0) {
+              availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
+                TimeRange.END_OF_DAY, true));
+            }
+      }
     }
 
     return availableTimes;
