@@ -31,17 +31,17 @@ public final class FindMeetingQuery {
     
     List<TimeRange> availableTimes = new ArrayList<TimeRange>();
 
-    //Store in ArrayList for easier access to elements
+    // Store in ArrayList for easier access to elements.
     List<Event> eventList = new ArrayList<>(events);
 
-    //Add the first time slot, from the start of the day to the start of the first event.
+    // Add the first time slot, from the start of the day to the start of the first event.
     availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
       eventList.get(0).getWhen().start(), false));
 
     for (int i = 0; i < eventList.size() - 1; i++) {
-      // If our event fully contains the next one, ignore the next event and connect events 1 and 3
+      // Check if our event fully contains the next one.
       if(eventList.get(i).getWhen().contains(eventList.get(i + 1).getWhen())) {
-        // Check if there are any events left. Otherwise, connect with the end of day
+        // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
         if(i + 2 < eventList.size() - 1) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
             eventList.get(i + 2).getWhen().start(), true));
@@ -51,12 +51,12 @@ public final class FindMeetingQuery {
             TimeRange.END_OF_DAY, true));
         }
       } else {
-          //If the current event and next one overlap, just skip that time slot
+          // If the current event and next one overlap, just skip that time slot.
           if(eventList.get(i).getWhen().overlaps(eventList.get(i + 1).getWhen())) {
             continue;
           }
 
-          //Connect the end of current event with the start of the next event
+          // Connect the end of current event with the start of the next event.
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
             eventList.get(i + 1).getWhen().start(), false));   
         }
