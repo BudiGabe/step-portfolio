@@ -38,19 +38,35 @@ public final class FindMeetingQuery {
     availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
       eventList.get(0).getWhen().start(), false));
 
-    //Connect the end of each event with the start of the next event
     for (int i = 0; i < eventList.size() - 1; i++) {
-      //If the current event and next one overlap, just skip that time slot
-      if(eventList.get(i).getWhen().overlaps(eventList.get(i + 1).getWhen())) {
-        continue;
-      }
-      availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
-        eventList.get(i + 1).getWhen().start(), false));
+      // If our event fully contains the next one, ignore the next event and connect events 1 and 3
+      if(eventList.get(i).getWhen().contains(eventList.get(i + 1).getWhen())) {
+        // Check if there are any events left. Otherwise, connect with the end of day
+        if(i + 2 < eventList.size() - 1) {
+          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+            eventList.get(i + 2).getWhen().start(), true));
+          i++;
+        } else {
+          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+            TimeRange.END_OF_DAY, true));
+        }
+      } else {
+          //If the current event and next one overlap, just skip that time slot
+          if(eventList.get(i).getWhen().overlaps(eventList.get(i + 1).getWhen())) {
+            continue;
+          }
+
+          //Connect the end of current event with the start of the next event
+          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+            eventList.get(i + 1).getWhen().start(), false));   
+        }
     }
 
     //Add the last time slot, from the end of the last event, to the end of the day.
-    availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
-      TimeRange.END_OF_DAY, true));
+    if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1) {
+      availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
+        TimeRange.END_OF_DAY, true));
+    }
 
     return availableTimes;
   }
