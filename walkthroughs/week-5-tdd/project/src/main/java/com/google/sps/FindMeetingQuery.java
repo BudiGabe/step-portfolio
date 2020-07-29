@@ -35,15 +35,18 @@ public final class FindMeetingQuery {
     List<Event> eventList = new ArrayList<>(events);
 
     //Add the first time slot, from the start of the day to the start of the first event.
-    availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY, eventList.get(0).getWhen().start(), false));
+    availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
+      eventList.get(0).getWhen().start(), false));
 
     //Connect the end of each event with the start of the next event
     for (int i = 0; i < eventList.size() - 1; i++) {
-      availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(), eventList.get(i + 1).getWhen().start(), false));
+      availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+        eventList.get(i + 1).getWhen().start(), false));
     }
 
     //Add the last time slot, from the end of the last event, to the end of the day.
-    availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(), TimeRange.END_OF_DAY, true));
+    availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
+      TimeRange.END_OF_DAY, true));
 
     return availableTimes;
   }
