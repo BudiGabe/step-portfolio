@@ -73,7 +73,7 @@ public final class FindMeetingQuery {
     // only if the end of day was not already added or there is no event that ends the day
     if(availableTimes.size() != 0) {
       if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1 &&
-          eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY) {
+          eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
             TimeRange.END_OF_DAY, true));
       } else {
