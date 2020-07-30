@@ -71,13 +71,10 @@ public final class FindMeetingQuery {
             TimeRange.END_OF_DAY, true));
         }
       } else {
-          // If the current event and next one overlap, just skip that time slot.
           if(currEventTimeRange.overlaps(nextEventTimeRange)) {
             continue;
           }
 
-          // Connect the end of current event with the start of the next event
-          // only if the request fits.
           if(nextEventTimeRange.start() - currEventTimeRange.end() >= request.getDuration()) {
             availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
               nextEventTimeRange.start(), false));  
