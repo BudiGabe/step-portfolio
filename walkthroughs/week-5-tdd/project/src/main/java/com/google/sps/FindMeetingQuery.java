@@ -51,29 +51,32 @@ public final class FindMeetingQuery {
     }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
+      TimeRange currEventTimeRange = eventList.get(i).getWhen();
+      TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
+      TimeRange nextnextEventTimeRange = eventList.get(i + 2).getWhen();
+      
       // Check if our event fully contains the next one.
-      if(eventList.get(i).getWhen().contains(eventList.get(i + 1).getWhen())) {
+      if(currEventTimeRange.contains(nextEventTimeRange)) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
         if(i + 2 < eventList.size() - 1) {
-          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
-            eventList.get(i + 2).getWhen().start(), true));
+          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
+            nextnextEventTimeRange.start(), true));
           i++;
         } else {
-          availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
+          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
             TimeRange.END_OF_DAY, true));
         }
       } else {
           // If the current event and next one overlap, just skip that time slot.
-          if(eventList.get(i).getWhen().overlaps(eventList.get(i + 1).getWhen())) {
+          if(currEventTimeRange.overlaps(nextEventTimeRange)) {
             continue;
           }
 
           // Connect the end of current event with the start of the next event
           // only if the request fits.
-          if(eventList.get(i + 1).getWhen().start() - eventList.get(i).getWhen().end() >=
-            request.getDuration()) {
-            availableTimes.add(TimeRange.fromStartEnd(eventList.get(i).getWhen().end(),
-              eventList.get(i + 1).getWhen().start(), false));  
+          if(nextEventTimeRange.start() - currEventTimeRange.end() >= request.getDuration()) {
+            availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
+              nextEventTimeRange.start(), false));  
           } 
         }
     }
@@ -115,6 +118,6 @@ public final class FindMeetingQuery {
   }
 
   private boolean dayStartsWithEvent(List<Event> eventList) {
-    return eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY
+    return eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY;
   }
 }
