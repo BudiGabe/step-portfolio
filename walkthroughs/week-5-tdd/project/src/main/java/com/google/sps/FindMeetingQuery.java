@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
@@ -34,6 +35,10 @@ public final class FindMeetingQuery {
     // Store in ArrayList for easier access to elements.
     List<Event> eventList = new ArrayList<>(events);
 
+    int eventsSkipped = 0;
+
+    
+
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
     if(eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY) {
@@ -42,6 +47,16 @@ public final class FindMeetingQuery {
     }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
+      List<String> requestAttendees = new ArrayList<>(request.getAttendees());
+      List<String> eventAttendees = new ArrayList<>(eventList.get(i).getAttendees());
+
+      List<String> common = requestAttendees.stream()
+        .filter(eventAttendees::contains)
+        .collect(Collectors.toList());
+      if(common.isEmpty()) {
+          eventsSkipped ++;
+          continue;
+        }
       // Check if our event fully contains the next one.
       if(eventList.get(i).getWhen().contains(eventList.get(i + 1).getWhen())) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
@@ -86,6 +101,22 @@ public final class FindMeetingQuery {
       }
     }
 
-    return availableTimes;
+    if(eventsSkipped == eventList.size()) {
+      availableTimes.add(TimeRange.WHOLE_DAY);
+    }
+
+
+      return availableTimes;
+  }
+
+  private boolean requestHasNoAttendees(MeetingRequest request, List<Event> eventList, int eventNum) {
+    List<String> requestAttendees = new ArrayList<>(request.getAttendees());
+    List<String> eventAttendees = new ArrayList<>(eventList.get(eventNum).getAttendees());
+
+    List<String> commonAttendees = requestAttendees.stream()
+      .filter(eventAttendees::contains)
+      .collect(Collectors.toList());
+    
+    return commonAttendees.isEmpty();
   }
 }
