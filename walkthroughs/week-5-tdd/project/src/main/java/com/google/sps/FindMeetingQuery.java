@@ -53,12 +53,12 @@ public final class FindMeetingQuery {
     for (int i = 0; i < eventList.size() - 1; i++) {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
-      TimeRange nextnextEventTimeRange = eventList.get(i + 2).getWhen();
-      
+
       // Check if our event fully contains the next one.
       if(currEventTimeRange.contains(nextEventTimeRange)) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
         if(i + 2 < eventList.size() - 1) {
+          TimeRange nextnextEventTimeRange = eventList.get(i + 2).getWhen();
           availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
             nextnextEventTimeRange.start(), true));
           i++;
