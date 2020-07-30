@@ -89,8 +89,7 @@ public final class FindMeetingQuery {
             TimeRange.END_OF_DAY, true));
       } else {
           //If it didn't fit anywhere, check if it fits at the end of the day
-          if(request.getDuration() < TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1).getWhen().end() &&
-            availableTimes.size() == 0) {
+          if(fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
               availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
                 TimeRange.END_OF_DAY, true));
             }
@@ -122,7 +121,12 @@ public final class FindMeetingQuery {
 
   private boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
     return (availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1) &&
-          (eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1);
+      (eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1);
   }
 
+  private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
+    List<Event> eventList) {
+    return request.getDuration() < TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
+      .getWhen().end() && availableTimes.size() == 0;
+  }
 }
