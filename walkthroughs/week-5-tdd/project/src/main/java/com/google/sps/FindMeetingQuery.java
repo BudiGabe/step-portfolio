@@ -38,7 +38,7 @@ public final class FindMeetingQuery {
     int eventsSkipped = 0;
 
     if(eventList.size() == 1) {
-      if(requestHasNoAttendees(request, eventList, 0)) {
+      if(!requestHasAttendees(request, eventList, 0)) {
         eventsSkipped++;
       }
     }
@@ -46,22 +46,12 @@ public final class FindMeetingQuery {
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
     if(eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY &&
-      !requestHasNoAttendees(request, eventList, 0)) {
+      requestHasAttendees(request, eventList, 0)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         eventList.get(0).getWhen().start(), false));
     }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
-      List<String> requestAttendees = new ArrayList<>(request.getAttendees());
-      List<String> eventAttendees = new ArrayList<>(eventList.get(i).getAttendees());
-
-      List<String> common = requestAttendees.stream()
-        .filter(eventAttendees::contains)
-        .collect(Collectors.toList());
-      if(common.isEmpty()) {
-          eventsSkipped ++;
-          continue;
-        }
       // Check if our event fully contains the next one.
       if(eventList.get(i).getWhen().contains(eventList.get(i + 1).getWhen())) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
@@ -91,7 +81,7 @@ public final class FindMeetingQuery {
 
     // Add the last time slot, from the end of the last event to the end of the day,
     // only if the end of day was not already added or there is no event that ends the day
-    if(availableTimes.size() != 0 && !requestHasNoAttendees(request, eventList, eventList.size() - 1)) {
+    if(availableTimes.size() != 0 && requestHasAttendees(request, eventList, eventList.size() - 1)) {
       if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1 &&
           eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
@@ -114,7 +104,7 @@ public final class FindMeetingQuery {
       return availableTimes;
   }
 
-  private boolean requestHasNoAttendees(MeetingRequest request, List<Event> eventList, int eventNum) {
+  private boolean requestHasAttendees(MeetingRequest request, List<Event> eventList, int eventNum) {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
     List<String> eventAttendees = new ArrayList<>(eventList.get(eventNum).getAttendees());
 
@@ -122,6 +112,6 @@ public final class FindMeetingQuery {
       .filter(eventAttendees::contains)
       .collect(Collectors.toList());
     
-    return commonAttendees.isEmpty();
+    return !commonAttendees.isEmpty();
   }
 }
