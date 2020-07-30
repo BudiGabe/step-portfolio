@@ -37,11 +37,16 @@ public final class FindMeetingQuery {
 
     int eventsSkipped = 0;
 
-    
+    if(eventList.size() == 1) {
+      if(requestHasNoAttendees(request, eventList, 0)) {
+        eventsSkipped++;
+      }
+    }
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if(eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY) {
+    if(eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY &&
+      !requestHasNoAttendees(request, eventList, 0)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         eventList.get(0).getWhen().start(), false));
     }
@@ -86,7 +91,7 @@ public final class FindMeetingQuery {
 
     // Add the last time slot, from the end of the last event to the end of the day,
     // only if the end of day was not already added or there is no event that ends the day
-    if(availableTimes.size() != 0) {
+    if(availableTimes.size() != 0 && !requestHasNoAttendees(request, eventList, eventList.size() - 1)) {
       if(availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1 &&
           eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
