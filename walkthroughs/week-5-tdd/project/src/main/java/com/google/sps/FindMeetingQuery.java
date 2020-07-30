@@ -81,20 +81,19 @@ public final class FindMeetingQuery {
         }
     }
 
-    // Add the last time slot, from the end of the last event to the end of the day,
-    // only if the end of day was not already added or there is no event that ends the day
-    if(availableTimes.size() != 0 && requestHasAttendees(request, eventList, eventList.size() - 1)) {
-      if(nothingEndsTheDay(availableTimes, eventList)) {
+    if(requestHasAttendees(request, eventList, eventList.size() - 1)) {
+      if(availableTimes.size() != 0){
+        if(nothingEndsTheDay(availableTimes, eventList)) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
             TimeRange.END_OF_DAY, true));
+        } 
       } else {
-          //If it didn't fit anywhere, check if it fits at the end of the day
           if(fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
               availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
                 TimeRange.END_OF_DAY, true));
             }
-      }
-    }
+        } 
+    } 
 
     if(eventsSkipped == eventList.size()) {
       availableTimes.add(TimeRange.WHOLE_DAY);
@@ -127,6 +126,6 @@ public final class FindMeetingQuery {
   private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
     List<Event> eventList) {
     return request.getDuration() < TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
-      .getWhen().end() && availableTimes.size() == 0;
+      .getWhen().end();
   }
 }
