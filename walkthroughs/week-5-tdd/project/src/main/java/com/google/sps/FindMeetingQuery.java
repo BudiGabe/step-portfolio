@@ -31,21 +31,21 @@ public final class FindMeetingQuery {
     }
     
     List<TimeRange> availableTimes = new ArrayList<TimeRange>();
-
-    // Store in ArrayList for easier access to elements.
     List<Event> eventList = new ArrayList<>(events);
+    Event firstEvent = eventList.get(0);
+    Event lastEvent = eventList.get(eventList.size() - 1);
 
     int eventsSkipped = 0;
 
     if(eventList.size() == 1) {
-      if(!requestHasAttendees(request, eventList, 0)) {
+      if(!requestHasAttendees(request, firstEvent)) {
         eventsSkipped++;
       }
     }
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if(dayStartsWithEvent(eventList) && requestHasAttendees(request, eventList, 0)) {
+    if(dayStartsWithEvent(eventList) && requestHasAttendees(request, firstEvent)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         eventList.get(0).getWhen().start(), false));
     }
@@ -54,7 +54,7 @@ public final class FindMeetingQuery {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if(!requestHasAttendees(request, eventList, i)) {
+      if(!requestHasAttendees(request, currEvent)) {
         eventsSkipped ++;
         continue;
       }
@@ -85,7 +85,7 @@ public final class FindMeetingQuery {
         }
     }
 
-    if(requestHasAttendees(request, eventList, eventList.size() - 1)) {
+    if(requestHasAttendees(request, lastEvent)) {
       if(availableTimes.size() != 0){
         if(nothingEndsTheDay(availableTimes, eventList)) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
@@ -106,9 +106,9 @@ public final class FindMeetingQuery {
       return availableTimes;
   }
 
-  private boolean requestHasAttendees(MeetingRequest request, List<Event> eventList, int eventNum) {
+  private boolean requestHasAttendees(MeetingRequest request, Event currEvent) {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
-    List<String> eventAttendees = new ArrayList<>(eventList.get(eventNum).getAttendees());
+    List<String> eventAttendees = new ArrayList<>(currEvent.getAttendees());
 
     List<String> commonAttendees = requestAttendees.stream()
       .filter(eventAttendees::contains)
