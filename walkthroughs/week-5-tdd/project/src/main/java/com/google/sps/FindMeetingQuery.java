@@ -111,21 +111,25 @@ public final class FindMeetingQuery {
     return availableTimes;
   }
 
-  static private boolean requestHasEventAttendees(MeetingRequest request, Event currEvent) {
+  private static boolean requestHasEventAttendees(MeetingRequest request, Event currEvent) {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
     List<String> eventAttendees = new ArrayList<>(currEvent.getAttendees());
 
     return requestAttendees.stream().anyMatch(eventAttendees::contains);
   }
 
-  // Check if the first event in our list already includes the start of the day.
-  static private boolean startOfDayIsFree(List<Event> eventList) {
+  /**
+   * Check if the first event in our list already includes the start of the day.
+   */ 
+  private static boolean startOfDayIsFree(List<Event> eventList) {
     return eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY;
   }
 
-  // Check if there are no available times already added in our list which contain the end of day
-  // and any events that end the day.
-  static private boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
+  /**
+   * Check if there are no available times already added in our list which contain the end of day
+   * and any events that end the day.
+   */ 
+  private static boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
     // TimeRange.END_OF_DAY returns 1439 (23*60 + 59), but the actual end of day measured in tests
     // is 1440.
     int END_OF_DAY = TimeRange.END_OF_DAY + 1;
@@ -134,8 +138,10 @@ public final class FindMeetingQuery {
       (eventList.get(eventList.size() - 1).getWhen().end() != END_OF_DAY);
   }
 
-  // Check if the duration of our request fits between the end of the day and the end of the last event.
-  static private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
+  /**
+   * Check if the duration of our request fits between the end of the day and the end of the last event.
+   */ 
+  private static boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
     List<Event> eventList) {
     return request.getDuration() <= TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
       .getWhen().end();
