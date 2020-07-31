@@ -50,7 +50,7 @@ public final class FindMeetingQuery {
     // only if there's no event that starts the day.
     if (StartOfDayIsFree(eventList) && requestHasEventAttendees) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
-        eventList.get(0).getWhen().start(), false));
+        firstEvent.getWhen().start(), false));
     }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
