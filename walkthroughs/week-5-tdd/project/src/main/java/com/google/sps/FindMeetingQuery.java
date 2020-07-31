@@ -75,7 +75,7 @@ public final class FindMeetingQuery {
         }
       } else {
           // If current event completely overlaps the next event, there's no reason to check
-          // the next one too, as it's start and end are completely contained
+          // the next one too, as it's start and end are completely contained.
           if (currEventTimeRange.overlaps(nextEventTimeRange)) {
             continue;
           }
@@ -112,11 +112,7 @@ public final class FindMeetingQuery {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
     List<String> eventAttendees = new ArrayList<>(currEvent.getAttendees());
 
-    List<String> commonAttendees = requestAttendees.stream()
-      .filter(eventAttendees::contains)
-      .collect(Collectors.toList());
-    
-    return !commonAttendees.isEmpty();
+    return requestAttendees.stream().anyMatch(eventAttendees::contains);
   }
 
   // Check if the first event in our list already includes the start of the day.
@@ -125,17 +121,17 @@ public final class FindMeetingQuery {
   }
 
   // Check if there are no available times already added in our list which contain the end of day
-  // and any events that end the day
+  // and any events that end the day.
   private boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
     // TimeRange.END_OF_DAY returns 1439 (23*60 + 59), but the actual end of day measured in tests
-    // is 1440
+    // is 1440.
     int END_OF_DAY = TimeRange.END_OF_DAY + 1;
 
     return (availableTimes.get(availableTimes.size() - 1).end() != END_OF_DAY) &&
       (eventList.get(eventList.size() - 1).getWhen().end() != END_OF_DAY);
   }
 
-  // Check if the duration of our request fits between the end of the day and the end of the last event
+  // Check if the duration of our request fits between the end of the day and the end of the last event.
   private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
     List<Event> eventList) {
     return request.getDuration() <= TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
