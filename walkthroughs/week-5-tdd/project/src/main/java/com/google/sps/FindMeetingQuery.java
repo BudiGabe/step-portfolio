@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 
 public final class FindMeetingQuery {
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
-    if(events.isEmpty() && request.getDuration() <= TimeRange.WHOLE_DAY.duration()) {
+    if (events.isEmpty() && request.getDuration() <= TimeRange.WHOLE_DAY.duration()) {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
 
-    if(request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
+    if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
       return Arrays.asList();
     }
     
@@ -37,15 +37,15 @@ public final class FindMeetingQuery {
 
     int eventsSkipped = 0;
 
-    if(eventList.size() == 1) {
-      if(!requestHasEventAttendees(request, firstEvent)) {
+    if (eventList.size() == 1) {
+      if (!requestHasEventAttendees(request, firstEvent)) {
         eventsSkipped++;
       }
     }
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if(StartOfDayIsFree(eventList) && requestHasEventAttendees(request, firstEvent)) {
+    if (StartOfDayIsFree(eventList) && requestHasEventAttendees(request, firstEvent)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         eventList.get(0).getWhen().start(), false));
     }
@@ -54,14 +54,14 @@ public final class FindMeetingQuery {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if(!requestHasEventAttendees(request, currEvent)) {
+      if (!requestHasEventAttendees(request, currEvent)) {
         eventsSkipped ++;
         continue;
       }
 
-      if(currEventTimeRange.contains(nextEventTimeRange)) {
+      if (currEventTimeRange.contains(nextEventTimeRange)) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
-        if(i + 2 < eventList.size() - 1) {
+        if (i + 2 < eventList.size() - 1) {
           TimeRange nextnextEventTimeRange = eventList.get(i + 2).getWhen();
           availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
             nextnextEventTimeRange.start(), true));
@@ -71,32 +71,32 @@ public final class FindMeetingQuery {
             TimeRange.END_OF_DAY, true));
         }
       } else {
-          if(currEventTimeRange.overlaps(nextEventTimeRange)) {
+          if (currEventTimeRange.overlaps(nextEventTimeRange)) {
             continue;
           }
 
-          if(nextEventTimeRange.start() - currEventTimeRange.end() >= request.getDuration()) {
+          if (nextEventTimeRange.start() - currEventTimeRange.end() >= request.getDuration()) {
             availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
               nextEventTimeRange.start(), false));  
           } 
         }
     }
 
-    if(requestHasEventAttendees(request, lastEvent)) {
-      if(availableTimes.size() != 0){
-        if(nothingEndsTheDay(availableTimes, eventList)) {
+    if (requestHasEventAttendees(request, lastEvent)) {
+      if (availableTimes.size() != 0){
+        if (nothingEndsTheDay(availableTimes, eventList)) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
             TimeRange.END_OF_DAY, true));
         } 
       } else {
-          if(fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
+          if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
               availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
                 TimeRange.END_OF_DAY, true));
             }
         } 
     } 
 
-    if(eventsSkipped == eventList.size()) {
+    if (eventsSkipped == eventList.size()) {
       availableTimes.add(TimeRange.WHOLE_DAY);
     }
 
