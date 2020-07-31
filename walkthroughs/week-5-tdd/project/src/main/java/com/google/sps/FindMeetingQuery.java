@@ -135,9 +135,10 @@ public final class FindMeetingQuery {
       (eventList.get(eventList.size() - 1).getWhen().end() != END_OF_DAY);
   }
 
+  // Check if the duration of our request fits between the end of the day and the end of the last event
   private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
     List<Event> eventList) {
-    return request.getDuration() < TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
+    return request.getDuration() <= TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
       .getWhen().end();
   }
 }
