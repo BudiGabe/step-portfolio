@@ -15,6 +15,7 @@
 package com.google.sps;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +33,11 @@ public final class FindMeetingQuery {
     
     List<TimeRange> availableTimes = new ArrayList<TimeRange>();
     List<Event> eventList = new ArrayList<>(events);
+
+    Collections.sort(eventList, Event.ORDER_BY_START);
+
     Event firstEvent = eventList.get(0);
     Event lastEvent = eventList.get(eventList.size() - 1);
-
     int eventsSkipped = 0;
     boolean requestHasEventAttendees = requestHasEventAttendees(request, firstEvent);
 
