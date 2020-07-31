@@ -38,14 +38,14 @@ public final class FindMeetingQuery {
     int eventsSkipped = 0;
 
     if(eventList.size() == 1) {
-      if(!requestHasAttendees(request, firstEvent)) {
+      if(!requestHasEventAttendees(request, firstEvent)) {
         eventsSkipped++;
       }
     }
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if(StartOfDayIsFree(eventList) && requestHasAttendees(request, firstEvent)) {
+    if(StartOfDayIsFree(eventList) && requestHasEventAttendees(request, firstEvent)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         eventList.get(0).getWhen().start(), false));
     }
@@ -54,7 +54,7 @@ public final class FindMeetingQuery {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if(!requestHasAttendees(request, currEvent)) {
+      if(!requestHasEventAttendees(request, currEvent)) {
         eventsSkipped ++;
         continue;
       }
@@ -82,7 +82,7 @@ public final class FindMeetingQuery {
         }
     }
 
-    if(requestHasAttendees(request, lastEvent)) {
+    if(requestHasEventAttendees(request, lastEvent)) {
       if(availableTimes.size() != 0){
         if(nothingEndsTheDay(availableTimes, eventList)) {
           availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
@@ -103,7 +103,7 @@ public final class FindMeetingQuery {
       return availableTimes;
   }
 
-  private boolean requestHasAttendees(MeetingRequest request, Event currEvent) {
+  private boolean requestHasEventAttendees(MeetingRequest request, Event currEvent) {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
     List<String> eventAttendees = new ArrayList<>(currEvent.getAttendees());
 
