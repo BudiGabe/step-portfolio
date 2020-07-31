@@ -37,6 +37,7 @@ public final class FindMeetingQuery {
 
     int eventsSkipped = 0;
 
+    
     if (eventList.size() == 1) {
       if (!requestHasEventAttendees(request, firstEvent)) {
         eventsSkipped++;
@@ -54,7 +55,7 @@ public final class FindMeetingQuery {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if (!requestHasEventAttendees(request, currEvent)) {
+      if (!requestHasEventAttendees(request, eventList.get(i))) {
         eventsSkipped ++;
         continue;
       }
