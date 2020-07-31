@@ -37,11 +37,12 @@ public final class FindMeetingQuery {
 
     int eventsSkipped = 0;
 
-    
+    // If there is only one event happening that day, the for loop will be skipped,
+    // so we handle the case separately.
     if (eventList.size() == 1) {
       if (!requestHasEventAttendees(request, firstEvent)) {
         eventsSkipped++;
-      }
+      } 
     }
 
     // Add the first time slot, from the start of the day to the start of the first event,
