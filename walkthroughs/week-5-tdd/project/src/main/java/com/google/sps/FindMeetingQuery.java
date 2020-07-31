@@ -124,6 +124,8 @@ public final class FindMeetingQuery {
     return eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY;
   }
 
+  // Check if there are no available times already added in our list which contain the end of day
+  // and any events that end the day
   private boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
     return (availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1) &&
       (eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1);
