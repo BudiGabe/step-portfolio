@@ -100,7 +100,7 @@ public final class FindMeetingQuery {
       availableTimes.add(TimeRange.WHOLE_DAY);
     }
 
-      return availableTimes;
+    return availableTimes;
   }
 
   private boolean requestHasEventAttendees(MeetingRequest request, Event currEvent) {
