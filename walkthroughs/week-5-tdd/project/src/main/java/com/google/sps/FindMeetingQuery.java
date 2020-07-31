@@ -130,12 +130,10 @@ public final class FindMeetingQuery {
    * and any events that end the day.
    */ 
   private static boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
-    // TimeRange.END_OF_DAY returns 1439 (23*60 + 59), but the actual end of day measured in tests
-    // is 1440.
-    int END_OF_DAY = TimeRange.END_OF_DAY + 1;
+    int endOfDay = TimeRange.WHOLE_DAY.duration();
 
-    return (availableTimes.get(availableTimes.size() - 1).end() != END_OF_DAY) &&
-      (eventList.get(eventList.size() - 1).getWhen().end() != END_OF_DAY);
+    return (availableTimes.get(availableTimes.size() - 1).end() != endOfDay) &&
+      (eventList.get(eventList.size() - 1).getWhen().end() != endOfDay);
   }
 
   /**
