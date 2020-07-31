@@ -127,8 +127,12 @@ public final class FindMeetingQuery {
   // Check if there are no available times already added in our list which contain the end of day
   // and any events that end the day
   private boolean nothingEndsTheDay(List<TimeRange> availableTimes, List<Event> eventList) {
-    return (availableTimes.get(availableTimes.size() - 1).end() != TimeRange.END_OF_DAY + 1) &&
-      (eventList.get(eventList.size() - 1).getWhen().end() != TimeRange.END_OF_DAY + 1);
+    // TimeRange.END_OF_DAY returns 1439 (23*60 + 59), but the actual end of day measured in tests
+    // is 1440
+    int END_OF_DAY = TimeRange.END_OF_DAY + 1;
+
+    return (availableTimes.get(availableTimes.size() - 1).end() != END_OF_DAY) &&
+      (eventList.get(eventList.size() - 1).getWhen().end() != END_OF_DAY);
   }
 
   private boolean fitsOnlyAtTheEnd(MeetingRequest request, List<TimeRange> availableTimes,
