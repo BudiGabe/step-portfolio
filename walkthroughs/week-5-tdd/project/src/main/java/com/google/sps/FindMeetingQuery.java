@@ -51,7 +51,7 @@ public final class FindMeetingQuery {
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if (StartOfDayIsFree(eventList) && requestHasEventAttendees) {
+    if (startOfDayIsFree(eventList) && requestHasEventAttendees) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         firstEvent.getWhen().start(), false));
     }
@@ -119,7 +119,7 @@ public final class FindMeetingQuery {
   }
 
   // Check if the first event in our list already includes the start of the day.
-  static private boolean StartOfDayIsFree(List<Event> eventList) {
+  static private boolean startOfDayIsFree(List<Event> eventList) {
     return eventList.get(0).getWhen().start() != TimeRange.START_OF_DAY;
   }
 
