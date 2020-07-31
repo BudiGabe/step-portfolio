@@ -74,6 +74,8 @@ public final class FindMeetingQuery {
             TimeRange.END_OF_DAY, true));
         }
       } else {
+          // If current event completely overlaps the next event, there's no reason to check
+          // the next one too, as it's start and end are completely contained
           if (currEventTimeRange.overlaps(nextEventTimeRange)) {
             continue;
           }
