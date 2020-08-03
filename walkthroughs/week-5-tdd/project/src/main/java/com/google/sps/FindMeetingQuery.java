@@ -31,7 +31,6 @@ public final class FindMeetingQuery {
       return Arrays.asList();
     }
     
-    List<TimeRange> availableTimes = new ArrayList<TimeRange>();
     List<Event> eventList = getEventsWithRequestAttendees(request, events);
 
     if(eventList.size() == 0) {
@@ -41,6 +40,7 @@ public final class FindMeetingQuery {
     Collections.sort(eventList, Event.ORDER_BY_START);
 
     TimeRange firstEventTimeRange = eventList.get(0).getWhen();
+    List<TimeRange> availableTimes = new ArrayList<TimeRange>();
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
