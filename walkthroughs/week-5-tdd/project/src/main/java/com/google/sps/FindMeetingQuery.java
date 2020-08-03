@@ -33,7 +33,7 @@ public final class FindMeetingQuery {
     
     List<Event> eventList = getEventsWithRequestAttendees(request, events);
 
-    if(eventList.size() == 0) {
+    if(eventList.isEmpty()) {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
  
