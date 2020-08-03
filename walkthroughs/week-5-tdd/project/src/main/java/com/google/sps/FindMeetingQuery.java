@@ -33,7 +33,7 @@ public final class FindMeetingQuery {
     
     List<Event> eventList = getEventsWithRequestAttendees(request, events);
 
-    if(eventList.isEmpty()) {
+    if (eventList.isEmpty()) {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
  
@@ -116,8 +116,8 @@ public final class FindMeetingQuery {
 
   private static List getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events) {
     List<Event> eventList = new ArrayList<>();
-    for(Event event : events) {
-      if(requestHasEventAttendees(request, event)) {
+    for (Event event : events) {
+      if (requestHasEventAttendees(request, event)) {
         eventList.add(event);
       }
     }
