@@ -55,12 +55,11 @@ public final class FindMeetingQuery {
 
       if (eventContainedOrOverlapped(currEventTimeRange, nextEventTimeRange)){
         searchForNextEvent(eventList, currEventTimeRange, i, availableTimes, request);
-      } else {
-          if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
-            availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
-              nextEventTimeRange.start(), false));  
-          }
-        } 
+      } else if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
+          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
+            nextEventTimeRange.start(), false));  
+        }
+        
     }
 
     // Sort them again to be able to get the last end. Might be not that efficient.
@@ -72,12 +71,11 @@ public final class FindMeetingQuery {
         availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
           TimeRange.END_OF_DAY, true));
       } 
-    } else {
-        if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
-          availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
-              TimeRange.END_OF_DAY, true));
-          }
-      } 
+    } else if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
+        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
+          TimeRange.END_OF_DAY, true));
+      }
+      
 
     return availableTimes;
   }
