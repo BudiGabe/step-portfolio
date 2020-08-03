@@ -150,7 +150,7 @@ public final class FindMeetingQuery {
   /**
    * Check if our request fits between the end of current event and the start of next event
    */
-  private static boolean requestFits(MeetingRequest request, int nextEventStart, int currEventend) {
+  private static boolean requestFits(MeetingRequest request, int nextEventStart, int currEventEnd) {
     return request.getDuration() <= nextEventStart - currEventEnd;
   }
 }
