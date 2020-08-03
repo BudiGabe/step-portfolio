@@ -32,8 +32,8 @@ public final class FindMeetingQuery {
     }
     
     List<TimeRange> availableTimes = new ArrayList<TimeRange>();
-    List<Event> eventList = new ArrayList<>(events);
-
+    List<Event> eventList = getEventsWithRequestAttendees(request, events);
+ 
     Collections.sort(eventList, Event.ORDER_BY_START);
 
     Event firstEvent = eventList.get(0);
@@ -64,7 +64,7 @@ public final class FindMeetingQuery {
         eventsSkipped ++;
         continue;
       }
-
+      while(currEventTimeRange.contains())
       if (currEventTimeRange.contains(nextEventTimeRange)) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
         if (i + 2 < eventList.size() - 1) {
@@ -143,5 +143,16 @@ public final class FindMeetingQuery {
     List<Event> eventList) {
     return request.getDuration() <= TimeRange.END_OF_DAY - eventList.get(eventList.size() - 1)
       .getWhen().end();
+  }
+
+  private static getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events) {
+    List<Event> eventList = new ArrayList<>();
+    for(Event event : events) {
+      if(requestHasEventAttendees(request, event)) {
+        eventList.add(event);
+      }
+    }
+
+    return eventList;
   }
 }
