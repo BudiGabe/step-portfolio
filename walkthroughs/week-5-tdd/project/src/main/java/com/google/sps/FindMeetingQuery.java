@@ -28,7 +28,7 @@ public final class FindMeetingQuery {
     }
 
     if (request.getDuration() > TimeRange.WHOLE_DAY.duration()) {
-      return Arrays.asList();
+      return Collections.emptyList();
     }
     
     List<Event> eventList = getEventsWithRequestAttendees(request, events);
