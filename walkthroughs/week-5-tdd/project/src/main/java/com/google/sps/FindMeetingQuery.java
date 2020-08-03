@@ -40,58 +40,44 @@ public final class FindMeetingQuery {
  
     Collections.sort(eventList, Event.ORDER_BY_START);
 
-    Event firstEvent = eventList.get(0);
-    Event lastEvent = eventList.get(eventList.size() - 1);
+    TimeRange firstEventTimeRange = eventList.get(0).getWhen();
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if (startOfDayIsFree(eventList)) {
+    if (startOfDayIsFree(eventList) && requestFits(request, firstEventTimeRange.start(), TimeRange.START_OF_DAY)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
-        firstEvent.getWhen().start(), false));
+        firstEventTimeRange.start(), false));
     }
 
     for (int i = 0; i < eventList.size() - 1; i++) {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if (currEventTimeRange.contains(nextEventTimeRange)) {
-        // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
-        if (i + 2 < eventList.size() - 1) {
-          TimeRange nextnextEventTimeRange = eventList.get(i + 2).getWhen();
-          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
-            nextnextEventTimeRange.start(), true));
-          i++;
-        } else {
-          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
-            TimeRange.END_OF_DAY, true));
-        }
+      if (eventContainedOrOverlapped(currEventTimeRange, nextEventTimeRange)){
+        searchForNextEvent(eventList, currEventTimeRange, i, availableTimes, request);
       } else {
-          // If current event completely overlaps the next event, there's no reason to check
-          // the next one too, as it's start and end are completely contained.
-          if (currEventTimeRange.overlaps(nextEventTimeRange)) {
-            continue;
-          }
-
-          if (nextEventTimeRange.start() - currEventTimeRange.end() >= request.getDuration()) {
+          if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
             availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
               nextEventTimeRange.start(), false));  
-          } 
-        }
+          }
+        } 
     }
 
-    if (requestHasEventAttendees(request, lastEvent)) {
-      if (availableTimes.size() != 0){
-        if (nothingEndsTheDay(availableTimes, eventList)) {
-          availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
-            TimeRange.END_OF_DAY, true));
-        } 
-      } else {
-          if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
-              availableTimes.add(TimeRange.fromStartEnd(eventList.get(eventList.size() - 1).getWhen().end(),
-                TimeRange.END_OF_DAY, true));
-            }
-        } 
-    } 
+    // Sort them again to be able to get the last end. Might be not that efficient.
+    Collections.sort(eventList, Event.ORDER_BY_END);
+    TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
+    
+    if (availableTimes.size() != 0 && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
+      if (nothingEndsTheDay(availableTimes, eventList)) {
+        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
+          TimeRange.END_OF_DAY, true));
+      } 
+    } else {
+        if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
+          availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
+              TimeRange.END_OF_DAY, true));
+          }
+      } 
 
     return availableTimes;
   }
@@ -139,5 +125,30 @@ public final class FindMeetingQuery {
     }
 
     return eventList;
+  }
+
+  private static boolean eventContainedOrOverlapped(TimeRange currEventTimeRange,
+    TimeRange nextEventTimeRange){
+    return currEventTimeRange.contains(nextEventTimeRange) ||
+      currEventTimeRange.overlaps(nextEventTimeRange);
+  }
+
+  /** 
+   * Search for the next event that is not contained or overlapped and connect them.
+   */
+  private static void searchForNextEvent(List<Event> eventList, TimeRange currEventTimeRange,
+    int currEventPosition, List<TimeRange> availableTimes, MeetingRequest request) {
+    for (int j = currEventPosition + 2; j < eventList.size(); j++) {
+      if (!eventContainedOrOverlapped(currEventTimeRange, eventList.get(j).getWhen())
+        && requestFits(request, currEventTimeRange.end(), eventList.get(j).getWhen().start())) {
+        availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(), 
+          eventList.get(j).getWhen().start(), true));
+        break;
+      }
+    }
+  }
+
+  private static boolean requestFits(MeetingRequest request, int start, int end) {
+    return request.getDuration() <= start - end;
   }
 }
