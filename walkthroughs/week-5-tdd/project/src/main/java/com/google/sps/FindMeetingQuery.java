@@ -66,7 +66,7 @@ public final class FindMeetingQuery {
     Collections.sort(eventList, Event.ORDER_BY_END);
     TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
     
-    if (availableTimes.size() != 0 && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
+    if (!availableTimes.isEmpty() 0 && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
       if (nothingEndsTheDay(availableTimes, eventList)) {
         availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
           TimeRange.END_OF_DAY, true));
