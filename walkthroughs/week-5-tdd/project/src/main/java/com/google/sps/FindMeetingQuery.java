@@ -66,7 +66,7 @@ public final class FindMeetingQuery {
     Collections.sort(eventList, Event.ORDER_BY_END);
     TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
     
-    if (!availableTimes.isEmpty() 0 && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
+    if (!availableTimes.isEmpty() && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
       if (nothingEndsTheDay(availableTimes, eventList)) {
         availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
           TimeRange.END_OF_DAY, true));
@@ -127,8 +127,7 @@ public final class FindMeetingQuery {
 
   private static boolean eventContainedOrOverlapped(TimeRange currEventTimeRange,
     TimeRange nextEventTimeRange){
-    return currEventTimeRange.contains(nextEventTimeRange) ||
-      currEventTimeRange.overlaps(nextEventTimeRange);
+    return currEventTimeRange.overlaps(nextEventTimeRange);
   }
 
   /** 
@@ -136,6 +135,8 @@ public final class FindMeetingQuery {
    */
   private static void searchForNextEvent(List<Event> eventList, TimeRange currEventTimeRange,
     int currEventPosition, List<TimeRange> availableTimes, MeetingRequest request) {
+    
+    // We already know that our next event is overlapped or contained, so start from position + 2 
     for (int j = currEventPosition + 2; j < eventList.size(); j++) {
       if (!eventContainedOrOverlapped(currEventTimeRange, eventList.get(j).getWhen())
         && requestFits(request, currEventTimeRange.end(), eventList.get(j).getWhen().start())) {
