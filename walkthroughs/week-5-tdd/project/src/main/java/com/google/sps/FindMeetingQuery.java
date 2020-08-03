@@ -33,25 +33,19 @@ public final class FindMeetingQuery {
     
     List<TimeRange> availableTimes = new ArrayList<TimeRange>();
     List<Event> eventList = getEventsWithRequestAttendees(request, events);
+
+    if(eventList.size() == 0) {
+      return Arrays.asList(TimeRange.WHOLE_DAY);
+    }
  
     Collections.sort(eventList, Event.ORDER_BY_START);
 
     Event firstEvent = eventList.get(0);
     Event lastEvent = eventList.get(eventList.size() - 1);
-    int eventsSkipped = 0;
-    boolean requestHasEventAttendees = requestHasEventAttendees(request, firstEvent);
-
-    // If there is only one event happening that day, the for loop will be skipped,
-    // so we handle the case separately.
-    if (eventList.size() == 1) {
-      if (!requestHasEventAttendees) {
-        eventsSkipped++;
-      } 
-    }
 
     // Add the first time slot, from the start of the day to the start of the first event,
     // only if there's no event that starts the day.
-    if (startOfDayIsFree(eventList) && requestHasEventAttendees) {
+    if (startOfDayIsFree(eventList)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         firstEvent.getWhen().start(), false));
     }
@@ -60,11 +54,6 @@ public final class FindMeetingQuery {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
 
-      if (!requestHasEventAttendees(request, eventList.get(i))) {
-        eventsSkipped ++;
-        continue;
-      }
-      while(currEventTimeRange.contains())
       if (currEventTimeRange.contains(nextEventTimeRange)) {
         // If there is a 3rd event, connect events 1 and 3. Otherwise, connect with the end of day.
         if (i + 2 < eventList.size() - 1) {
@@ -104,10 +93,6 @@ public final class FindMeetingQuery {
         } 
     } 
 
-    if (eventsSkipped == eventList.size()) {
-      availableTimes.add(TimeRange.WHOLE_DAY);
-    }
-
     return availableTimes;
   }
 
@@ -145,7 +130,7 @@ public final class FindMeetingQuery {
       .getWhen().end();
   }
 
-  private static getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events) {
+  private static List getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events) {
     List<Event> eventList = new ArrayList<>();
     for(Event event : events) {
       if(requestHasEventAttendees(request, event)) {
