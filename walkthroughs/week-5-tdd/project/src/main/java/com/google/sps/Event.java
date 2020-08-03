@@ -65,6 +65,16 @@ public final class Event {
   };
 
   /**
+   * A comparator for sorting events by their end time in ascending order.
+   */
+  public static final Comparator<Event> ORDER_BY_END = new Comparator<Event>() {
+    @Override
+    public int compare(Event a, Event b) {
+      return Long.compare(a.getWhen().end(), b.getWhen().end());
+    }
+  };
+
+  /**
    * Returns the human-readable name for this event.
    */
   public String getTitle() {
