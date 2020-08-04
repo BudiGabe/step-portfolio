@@ -31,60 +31,45 @@ public final class FindMeetingQuery {
       return Collections.emptyList();
     }
     
-    List<Event> eventList = getEventsWithRequestAttendees(request, events);
+    // First we do the check with ALL our attendees.
+    List<Event> eventListWithAllAttendees = getEventsWithRequestAttendees(request, events, true);
 
-    if (eventList.isEmpty()) {
+    if (eventListWithAllAttendees.isEmpty()) {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
  
-    Collections.sort(eventList, Event.ORDER_BY_START);
+    List<TimeRange> availableTimesForAll = new ArrayList<TimeRange>();
 
-    TimeRange firstEventTimeRange = eventList.get(0).getWhen();
-    List<TimeRange> availableTimes = new ArrayList<TimeRange>();
+    handleBeginningOfDay(availableTimesForAll, eventListWithAllAttendees, request);
+    handleMiddleOfDay(availableTimesForAll, eventListWithAllAttendees, request);
+    handleEndOfDay(availableTimesForAll, eventListWithAllAttendees, request);
 
-    // Add the first time slot, from the start of the day to the start of the first event,
-    // only if there's no event that starts the day.
-    if (startOfDayIsFree(eventList) && requestFits(request, firstEventTimeRange.start(), TimeRange.START_OF_DAY)) {
-      availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
-        firstEventTimeRange.start(), false));
+    if (!availableTimesForAll.isEmpty()) {
+      return availableTimesForAll;
     }
 
-    // Go through each event and check if it overlaps with another. If it does, we connect
-    // the end of our event with the start of the next one that is not overlapped. Otherwise,
-    // just connect the 2 events to create a time slot, if the request fits.
-    for (int i = 0; i < eventList.size() - 1; i++) {
-      TimeRange currEventTimeRange = eventList.get(i).getWhen();
-      TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
+    // If no time was found for all attendees, then we go and check again only with mandatory ones.
+    List<Event> eventListWithMandatoryAttendees = getEventsWithRequestAttendees(request, events, false);
+    List<TimeRange> availableTimesForMandatory = new ArrayList<TimeRange>();
 
-      if (eventsOverlap(currEventTimeRange, nextEventTimeRange)){
-        searchForNextEvent(eventList, currEventTimeRange, i, availableTimes, request);
-      } else if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
-          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
-            nextEventTimeRange.start(), false));  
-        }
+    if (eventListWithMandatoryAttendees.isEmpty()) {
+      return Arrays.asList(TimeRange.WHOLE_DAY);
     }
 
-    // Sort them again to be able to get the last end. Might be not that efficient.
-    Collections.sort(eventList, Event.ORDER_BY_END);
-    TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
-    
-    //Handle the case where the meeting can take place at the end of the day
-    if (!availableTimes.isEmpty() && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
-      if (nothingEndsTheDay(availableTimes, eventList)) {
-        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
-          TimeRange.END_OF_DAY, true));
-      } 
-    } else if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
-        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
-          TimeRange.END_OF_DAY, true));
-      }
-      
-    return availableTimes;
+    handleBeginningOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
+    handleMiddleOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
+    handleEndOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
+
+    return availableTimesForMandatory;
   }
 
-  private static boolean requestHasEventAttendees(MeetingRequest request, Event currEvent) {
+  private static boolean requestHasEventAttendees(MeetingRequest request, Event currEvent,
+    boolean addAllAttendees) {
     List<String> requestAttendees = new ArrayList<>(request.getAttendees());
     List<String> eventAttendees = new ArrayList<>(currEvent.getAttendees());
+    if (addAllAttendees) {
+      requestAttendees.addAll(request.getOptionalAttendees());
+    }
 
     return requestAttendees.stream().anyMatch(eventAttendees::contains);
   }
@@ -116,8 +101,9 @@ public final class FindMeetingQuery {
       .getWhen().end();
   }
 
-  private static List getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events) {
-    return events.stream().filter(event -> requestHasEventAttendees(request, event))
+  private static List getEventsWithRequestAttendees(MeetingRequest request, Collection<Event> events,
+    boolean addAllAttendees) {
+    return events.stream().filter(event -> requestHasEventAttendees(request, event, addAllAttendees))
       .collect(Collectors.toList());
   }
 
@@ -131,9 +117,12 @@ public final class FindMeetingQuery {
    */
   private static void searchForNextEvent(List<Event> eventList, TimeRange currEventTimeRange,
     int currEventPosition, List<TimeRange> availableTimes, MeetingRequest request) {
-    
     // We already know that our next event is overlapped, so start from position + 2 
     for (int j = currEventPosition + 2; j < eventList.size(); j++) {
+      if (eventsOverlap(currEventTimeRange, eventList.get(j).getWhen())) {
+        eventList.remove(j);
+        j--;
+      }
       if (!eventsOverlap(currEventTimeRange, eventList.get(j).getWhen())
         && requestFits(request, currEventTimeRange.end(), eventList.get(j).getWhen().start())) {
         availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(), 
@@ -148,5 +137,65 @@ public final class FindMeetingQuery {
    */
   private static boolean requestFits(MeetingRequest request, int nextEventStart, int currEventEnd) {
     return request.getDuration() <= nextEventStart - currEventEnd;
+  }
+
+  private static void handleBeginningOfDay(List<TimeRange> availableTimes, List<Event> eventList,
+    MeetingRequest request) {
+    Collections.sort(eventList, Event.ORDER_BY_START);
+    TimeRange firstEventTimeRange = eventList.get(0).getWhen();
+    
+    // Add the first time slot, from the start of the day to the start of the first event,
+    // only if there's no event that starts the day.
+    if (startOfDayIsFree(eventList) && requestFits(request, firstEventTimeRange.start(), TimeRange.START_OF_DAY)) {
+      availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
+        firstEventTimeRange.start(), false));
+    }
+  }
+  
+  /**
+   * Go through each event and check if it overlaps with another. If it does, we connect
+   * the end of our event with the start of the next one that is not overlapped. Otherwise,
+   * just connect the 2 events to create a time slot, if the request fits.
+   */
+  private static void handleMiddleOfDay(List<TimeRange> availableTimes, List<Event> eventList,
+    MeetingRequest request) {
+    for (int i = 0; i < eventList.size() - 1; i++) {
+      TimeRange currEventTimeRange = eventList.get(i).getWhen();
+      TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
+      if (eventsOverlap(currEventTimeRange, nextEventTimeRange)){
+        removeOverlappedEvents(i, eventList, currEventTimeRange); 
+        searchForNextEvent(eventList, currEventTimeRange, i, availableTimes, request);
+      } else if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
+          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
+            nextEventTimeRange.start(), false));  
+        }
+    }
+  }
+
+  private static void handleEndOfDay(List<TimeRange> availableTimes, List<Event> eventList,
+    MeetingRequest request) {
+    // Sort them again to be able to get the last end. Might be not that efficient.
+    Collections.sort(eventList, Event.ORDER_BY_END);
+    TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
+    
+    // Handle the case where the meeting can take place at the end of the day
+    if (!availableTimes.isEmpty() && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
+      if (nothingEndsTheDay(availableTimes, eventList)) {
+        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
+          TimeRange.END_OF_DAY, true));
+      } 
+    } else if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
+        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
+          TimeRange.END_OF_DAY, true));
+      }
+  }
+
+  private static void removeOverlappedEvents(int currEventPosition, List<Event> eventList,
+    TimeRange currEventTimeRange) {
+    for (int j = currEventPosition + 2; j < eventList.size(); j++) {
+      if (eventsOverlap(currEventTimeRange, eventList.get(j).getWhen())) {
+        eventList.remove(j);
+      }
+    }
   }
 }
