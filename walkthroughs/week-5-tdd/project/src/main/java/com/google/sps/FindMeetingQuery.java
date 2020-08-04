@@ -134,7 +134,7 @@ public final class FindMeetingQuery {
     
     // We already know that our next event is overlapped, so start from position + 2 
     for (int j = currEventPosition + 2; j < eventList.size(); j++) {
-      if (!eventContainedOrOverlapped(currEventTimeRange, eventList.get(j).getWhen())
+      if (!eventsOverlap(currEventTimeRange, eventList.get(j).getWhen())
         && requestFits(request, currEventTimeRange.end(), eventList.get(j).getWhen().start())) {
         availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(), 
           eventList.get(j).getWhen().start(), true));
