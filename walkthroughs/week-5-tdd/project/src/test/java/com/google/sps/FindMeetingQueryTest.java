@@ -367,7 +367,6 @@ public final class FindMeetingQueryTest {
   public void onlyOptionalAttendeesWithGaps() {
     // Have 2 optional attendees with multiple gaps.
     // Those gaps should be identified and returned.
-    // enough room for the request.
     // Events  :       |--A--|     |--A--|
     //                                         |--B--|
     // Day     : |-----------------------------------|
@@ -413,7 +412,7 @@ public final class FindMeetingQueryTest {
             Arrays.asList(PERSON_A)),
         new Event("Event 3", TimeRange.fromStartEnd(TIME_1000AM, TimeRange.END_OF_DAY, true),
             Arrays.asList(PERSON_B)));
-
+            
     MeetingRequest request = new MeetingRequest(Arrays.asList(), DURATION_30_MINUTES);
 
     request.addOptionalAttendee(PERSON_A);
