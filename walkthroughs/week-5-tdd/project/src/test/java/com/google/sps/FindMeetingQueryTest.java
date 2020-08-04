@@ -401,6 +401,10 @@ public final class FindMeetingQueryTest {
     // Have 2 optional attendees with no gaps between their events.
     // We expect to have the whole day available since the optional attendees cannot be accommodated
     // and the mandatory ones (all zero of them) are free all day.
+    // Events  : |--A--||--------A------------|
+    //                                         |--B--|
+    // Day     : |-----------------------------------|
+    // Options : |-----------------------------------|
 
     Collection<Event> events = Arrays.asList(
         new Event("Event 1", TimeRange.fromStartEnd(TimeRange.START_OF_DAY, TIME_0830AM, false),
