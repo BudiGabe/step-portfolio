@@ -150,8 +150,8 @@ public final class FindMeetingQuery {
       // The next event can be different from the one above, if it was overlapped
       TimeRange actualNextEventTimeRange = eventList.get(i + 1).getWhen();
       if (requestFits(request, actualNextEventTimeRange.start(), currEventTimeRange.end())) {
-          availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
-            nextEventTimeRange.start(), false));  
+        availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
+          nextEventTimeRange.start(), false));  
       }
     }
   }
