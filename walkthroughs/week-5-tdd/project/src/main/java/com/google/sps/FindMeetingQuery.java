@@ -156,6 +156,11 @@ public final class FindMeetingQuery {
     }
   }
 
+  /**
+   * Method links the end of the last event to the end of the day.
+   * If there already are some available time slots added, we must check if nothing ends the day already
+   * If nothing was added yet, maybe our request fits only at the end of the day
+   */
   private static void handleEndOfDay(List<TimeRange> availableTimes, List<Event> eventList,
     MeetingRequest request) {
     // Sort them again to be able to get the last end. Might be not that efficient.
