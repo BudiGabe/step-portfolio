@@ -426,7 +426,7 @@ public final class FindMeetingQueryTest {
   }
 
   public void overlappingOptionalAttendees() {
-    //The algorithm should suggest the whole day, as there is no possible time slot including
+    // The algorithm should suggest the whole day, as there is no possible time slot including
     // the optional attendees, so it takes into consideration only mandatory attendees (all zero of them).
     // Events  : |--------A------------|
     //                            |---------B--------|
