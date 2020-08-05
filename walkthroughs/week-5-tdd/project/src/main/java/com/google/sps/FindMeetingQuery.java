@@ -112,22 +112,6 @@ public final class FindMeetingQuery {
     return currEventTimeRange.overlaps(nextEventTimeRange);
   }
 
-  /** 
-   * Search for the next event that is not contained or overlapped and connect them.
-   */
-  private static void searchForNextEvent(List<Event> eventList, TimeRange currEventTimeRange,
-    int currEventPosition, List<TimeRange> availableTimes, MeetingRequest request) {
-    // We already know that our next event is overlapped, so start from position + 2 
-    for (int j = currEventPosition + 2; j < eventList.size(); j++) {
-      if (!eventsOverlap(currEventTimeRange, eventList.get(j).getWhen())
-        && requestFits(request, currEventTimeRange.end(), eventList.get(j).getWhen().start())) {
-        availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(), 
-          eventList.get(j).getWhen().start(), true));
-        break;
-      }
-    }
-  }
-
   /**
    * Check if our request fits between the end of current event and the start of next event.
    */
@@ -158,13 +142,17 @@ public final class FindMeetingQuery {
     for (int i = 0; i < eventList.size() - 1; i++) {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
+
       if (eventsOverlap(currEventTimeRange, nextEventTimeRange)){
         removeOverlappedEvents(i, eventList, currEventTimeRange); 
-        searchForNextEvent(eventList, currEventTimeRange, i, availableTimes, request);
-      } else if (requestFits(request, nextEventTimeRange.start(), currEventTimeRange.end())) {
+      }
+
+      // The next event can be different from the one above, if it was overlapped
+      TimeRange actualNextEventTimeRange = eventList.get(i + 1).getWhen();
+      if (requestFits(request, actualNextEventTimeRange.start(), currEventTimeRange.end())) {
           availableTimes.add(TimeRange.fromStartEnd(currEventTimeRange.end(),
             nextEventTimeRange.start(), false));  
-        }
+      }
     }
   }
 
