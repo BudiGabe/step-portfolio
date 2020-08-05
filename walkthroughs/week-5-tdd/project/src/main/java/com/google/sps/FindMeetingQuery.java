@@ -179,6 +179,11 @@ public final class FindMeetingQuery {
       }
   }
 
+  /**
+   * Method goes through all events overlapped by our current event and removes them.
+   * Before calling this method, we already know that the next event is overlapped,
+   * so we start from currEventPosition + 2.
+   */
   private static void removeOverlappedEvents(int currEventPosition, List<Event> eventList,
     TimeRange currEventTimeRange) {
     for (int j = currEventPosition + 2; j < eventList.size(); j++) {
