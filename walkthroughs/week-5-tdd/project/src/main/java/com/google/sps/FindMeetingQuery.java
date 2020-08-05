@@ -40,9 +40,9 @@ public final class FindMeetingQuery {
  
     List<TimeRange> availableTimesForAll = new ArrayList<TimeRange>();
 
-    handleBeginningOfDay(availableTimesForAll, eventListWithAllAttendees, request);
-    handleMiddleOfDay(availableTimesForAll, eventListWithAllAttendees, request);
-    handleEndOfDay(availableTimesForAll, eventListWithAllAttendees, request);
+    availableTimesForAll.addAll(getBeginningOfDayTimeSlots(eventListWithAllAttendees, request));
+    availableTimesForAll.addAll(getMiddleOfDayTimeSlots(eventListWithAllAttendees, request)); 
+    availableTimesForAll.addAll(getEndOfDayTimeSlots(eventListWithAllAttendees, request)); 
 
     if (!availableTimesForAll.isEmpty()) {
       return availableTimesForAll;
@@ -56,9 +56,9 @@ public final class FindMeetingQuery {
       return Arrays.asList(TimeRange.WHOLE_DAY);
     }
 
-    handleBeginningOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
-    handleMiddleOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
-    handleEndOfDay(availableTimesForMandatory, eventListWithMandatoryAttendees, request);
+    availableTimesForMandatory.addAll(getBeginningOfDayTimeSlots(eventListWithMandatoryAttendees, request));
+    availableTimesForMandatory.addAll(getMiddleOfDayTimeSlots(eventListWithMandatoryAttendees, request));
+    availableTimesForMandatory.addAll(getEndOfDayTimeSlots(eventListWithMandatoryAttendees, request));
 
     return availableTimesForMandatory;
   }
@@ -119,8 +119,9 @@ public final class FindMeetingQuery {
     return request.getDuration() <= nextEventStart - currEventEnd;
   }
 
-  private static void handleBeginningOfDay(List<TimeRange> availableTimes, List<Event> eventList,
-    MeetingRequest request) {
+  private static List<TimeRange> getBeginningOfDayTimeSlots(List<Event> eventList, MeetingRequest request) {
+    List<TimeRange> availableTimes = new ArrayList<>();
+
     Collections.sort(eventList, Event.ORDER_BY_START);
     TimeRange firstEventTimeRange = eventList.get(0).getWhen();
     
@@ -130,6 +131,8 @@ public final class FindMeetingQuery {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         firstEventTimeRange.start(), false));
     }
+
+    return availableTimes;
   }
   
   /**
@@ -137,8 +140,8 @@ public final class FindMeetingQuery {
    * the end of our event with the start of the next one that is not overlapped. Otherwise,
    * just connect the 2 events to create a time slot, if the request fits.
    */
-  private static void handleMiddleOfDay(List<TimeRange> availableTimes, List<Event> eventList,
-    MeetingRequest request) {
+  private static List<TimeRange> getMiddleOfDayTimeSlots(List<Event> eventList, MeetingRequest request) {
+    List<TimeRange> availableTimes = new ArrayList<>();
     for (int i = 0; i < eventList.size() - 1; i++) {
       TimeRange currEventTimeRange = eventList.get(i).getWhen();
       TimeRange nextEventTimeRange = eventList.get(i + 1).getWhen();
@@ -154,6 +157,8 @@ public final class FindMeetingQuery {
           nextEventTimeRange.start(), false));  
       }
     }
+
+    return availableTimes;
   }
 
   /**
@@ -161,8 +166,9 @@ public final class FindMeetingQuery {
    * If there already are some available time slots added, we must check if nothing ends the day already
    * If nothing was added yet, maybe our request fits only at the end of the day
    */
-  private static void handleEndOfDay(List<TimeRange> availableTimes, List<Event> eventList,
-    MeetingRequest request) {
+  private static List<TimeRange> getEndOfDayTimeSlots(List<Event> eventList, MeetingRequest request) {
+    List<TimeRange> availableTimes = new ArrayList<>();
+
     // Sort them again to be able to get the last end. Might be not that efficient.
     Collections.sort(eventList, Event.ORDER_BY_END);
     TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
@@ -177,6 +183,8 @@ public final class FindMeetingQuery {
         availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
           TimeRange.END_OF_DAY, true));
       }
+
+      return availableTimes;
   }
 
   /**
