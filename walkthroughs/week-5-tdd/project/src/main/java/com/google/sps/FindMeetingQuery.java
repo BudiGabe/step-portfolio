@@ -119,14 +119,16 @@ public final class FindMeetingQuery {
     return request.getDuration() <= nextEventStart - currEventEnd;
   }
 
+  /**
+   * Add the first time slot, from the start of the day to the start of the first event,
+   * only if there's no event that starts the day.
+   */
   private static List<TimeRange> getBeginningOfDayTimeSlots(List<Event> eventList, MeetingRequest request) {
     List<TimeRange> availableTimes = new ArrayList<>();
 
     Collections.sort(eventList, Event.ORDER_BY_START);
     TimeRange firstEventTimeRange = eventList.get(0).getWhen();
     
-    // Add the first time slot, from the start of the day to the start of the first event,
-    // only if there's no event that starts the day.
     if (startOfDayIsFree(eventList) && requestFits(request, firstEventTimeRange.start(), TimeRange.START_OF_DAY)) {
       availableTimes.add(TimeRange.fromStartEnd(TimeRange.START_OF_DAY,
         firstEventTimeRange.start(), false));
@@ -174,17 +176,13 @@ public final class FindMeetingQuery {
     TimeRange lastEventTimeRange = eventList.get(eventList.size() - 1).getWhen();
     
     // Handle the case where the meeting can take place at the end of the day
-    if (!availableTimes.isEmpty() && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end())) {
-      if (nothingEndsTheDay(availableTimes, eventList)) {
+    if ((!availableTimes.isEmpty() && requestFits(request, TimeRange.END_OF_DAY, lastEventTimeRange.end()) &&
+      nothingEndsTheDay(availableTimes, eventList)) || fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
         availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
           TimeRange.END_OF_DAY, true));
-      } 
-    } else if (fitsOnlyAtTheEnd(request, availableTimes, eventList)) {
-        availableTimes.add(TimeRange.fromStartEnd(lastEventTimeRange.end(),
-          TimeRange.END_OF_DAY, true));
-      }
+    }     
 
-      return availableTimes;
+    return availableTimes;
   }
 
   /**
